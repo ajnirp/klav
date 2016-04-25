@@ -3,7 +3,6 @@
 import asyncio
 import datetime
 import discord
-import os
 import sys
 
 dt = datetime.datetime
@@ -15,8 +14,8 @@ IDOLS = ['minah', 'sojin', 'hyeri', 'yura', 'dai5y']
 ROLES_TO_AVOID_CHANGING = ['Mod', 'Admin', 'Dai5y']
 
 DEFAULT_ROLE = 'Dai5y'
-SERVER = "Girls Day"
-BIAS_CHANNEL = "whos_your_bias"
+SERVER = "Girl's Day"
+BIAS_CHANNEL = "whos-your-bias"
 MAIN_CHANNEL = "dai5ys"
 
 PIC_COMMANDS = [
@@ -51,6 +50,8 @@ def on_ready():
     global bias_channel, client, server
     server = find_server(client, SERVER)
     bias_channel = find_channel(server, BIAS_CHANNEL)
+    print(server.id)
+    print([(c.name,c.id) for c in server.channels])
     print('Logged in as', client.user.name)
     print('Listening on channel', bias_channel)
 
@@ -148,4 +149,4 @@ def on_message(msg):
     yield from force_set_bias(client, msg)
     yield from normal_set_bias(client, server, msg)
 
-client.run(os.environ['DISCORD_EMAIL'], os.environ['DISCORD_PASSW'])
+client.run('MTM0MjkyMjA5MzkzNTk4NDY0.Cf--Bg.oRMtOYwDS38NgzdsEg-eDixisiA')

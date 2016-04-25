@@ -1,0 +1,5 @@
+1. Host the bot remotely so that it runs 24/7.
+2. Add a way for mods to automatically add pics to the bot, something like !pic <attached pic>, the bot then downloads the pic into its 'database'.
+3. In parallel with 2., reorganise the way images are stored. Maybe fetch them remotely? Or just take the easy way out and use an image host like imgur.com?
+4. Implement a cooldown feature so that the bot doesn't post goodnight more than 5 times in the space of 10 minutes, say.
+5. Refactor the bot to work with multiple servers
