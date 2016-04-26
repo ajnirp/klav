@@ -19,17 +19,30 @@ BIAS_CHANNEL = "whos-your-bias"
 MAIN_CHANNEL = "dai5ys"
 
 PIC_COMMANDS = [
-    'rawr',
-    'police',
     'cheekpoke',
-    'nom',
     'consternation',
+    'dismay',
+    'eat',
+    'fightme',
+    'happy',
+    'hi',
+    'hungry',
+    'nom',
     'pen',
+    'plsno',
+    'police',
+    'rawr',
+    'sad',
     'userious',
     'yoboseyo',
-    'hungry',
-    'happy'
 ]
+
+HELP_MSG = '**Commands**:'
+for pic_cmd in PIC_COMMANDS:
+    HELP_MSG += ' ' + pic_cmd
+HELP_MSG += ' goodnight'
+
+HELP_MSG += '\n**Biases**: To set your bias, post the name of your bias in **#whos-your-bias** and the bot will set your role to that idol! Alternatively, type *!bias <name>* in any channel. For example, *!bias minah*. If the bot is offline, don\'t worry, a mod will come along and do it for you!'
 
 def find_role(server, idol):
     for role in server.roles:
@@ -50,8 +63,8 @@ def on_ready():
     global bias_channel, client, server
     server = find_server(client, SERVER)
     bias_channel = find_channel(server, BIAS_CHANNEL)
-    print(server.id)
-    print([(c.name,c.id) for c in server.channels])
+    # print(server.id)
+    # print([(c.name,c.id) for c in server.channels])
     print('Logged in as', client.user.name)
     print('Listening on channel', bias_channel)
 
@@ -130,6 +143,11 @@ def normal_set_bias(client, server, msg):
             yield from set_bias(client, bias_channel, user, role, msg)
             break
 
+@asyncio.coroutine
+def check_help(client, msg):
+    if msg.content[:9] == '!daisybot':
+        yield from client.send_message(msg.author, HELP_MSG)
+
 @client.event
 @asyncio.coroutine
 def on_message(msg):
@@ -144,6 +162,7 @@ def on_message(msg):
     # only work on the Girl's Day server
     if msg.server != server: return
 
+    yield from check_help(client, msg)
     yield from check_pic_upload(client, msg)
     yield from say_goodnight(client, msg)
     yield from force_set_bias(client, msg)
