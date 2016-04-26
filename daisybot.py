@@ -115,15 +115,19 @@ def say_goodnight(client, msg):
         yield from client.send_message(msg.channel, 'Goodnight {0.mention}!'.format(msg.author))
 
 # Set bias of another user
-# Only works if user 'cheeksy' says it
+# Format: !bias @<username_mention> idol
+#         !bias idol
+# The former only works if mods say it.
+# The latter always works.
 @asyncio.coroutine
 def force_set_bias(client, msg):
     author_is_mod = 'Mod' in [r.name for r in msg.author.roles]
-    if author_is_mod and msg.content[:5] == '!bias':
+    if msg.content[:5] == '!bias':
         split = msg.content.split()
-        if len(split) != 3: return
-        if len(msg.mentions) != 1: return
-        target_user = msg.mentions[0]
+        if len(msg.mentions) > 1: return
+        target_user = msg.mentions[0] if len(msg.mentions) == 1 else msg.author
+        # Ordinary users should not be able to set others' biases
+        if target_user != msg.author and not author_is_mod: return
         content = msg.content.lower()
         for idol in IDOLS:
             if idol in content:
