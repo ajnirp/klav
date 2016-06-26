@@ -1,1 +1,1 @@
-web: python3 daisybot.py
+web: python3 daisybot.py -q
