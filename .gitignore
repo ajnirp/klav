@@ -1,6 +1,3 @@
-gsd/
-aoa/
-*.jpg
-*.png
-*.gif
-creds.txt
+misc/
+info/
+*.pyc
