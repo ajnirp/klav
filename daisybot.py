@@ -170,7 +170,6 @@ def on_ready():
     global last_used, client, server
     print('Logged in as', client.user.name)
     last_used = time_now()
-    os.system('notify-send "Dai5ybot is running!"')
     aoa_server = next(s for s in client.servers if s.name == AOA_SERVER)
     meme_channel = next(c for c in aoa_server.channels if c.name == "meme_and_chill")
     if not SILENT_ENTRY:
