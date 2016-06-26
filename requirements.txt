@@ -1,1 +1,2 @@
 -e git+http://github.com/Rapptz/discord.py#egg=discord
+cffi==1.7.0
