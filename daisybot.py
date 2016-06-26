@@ -65,7 +65,7 @@ def read_config():
         IDOLS[s_name] = {}
         cfg_file = CONFIG[s_name]
         cfg_path = './config/' + cfg_file
-        with open(cfg_file, 'r') as f:
+        with open(cfg_path, 'r') as f:
             lines = [line.strip() for line in f.readlines()]
             WELCOME_MSG[s_name] = lines[1]
             for mapping in lines[2].split('\t'):
