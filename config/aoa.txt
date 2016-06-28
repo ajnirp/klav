@@ -149,3 +149,4 @@ sorn	http://i.imgur.com/ou0N3QJ.png
 bamboozled	http://i.imgur.com/rwpyzmb.png
 smk	http://i.imgur.com/x52AkoY.jpg
 sexuality	http://i.imgur.com/7ipGizh.png
+smug2	http://i.imgur.com/372Xmo8.png

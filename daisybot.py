@@ -248,8 +248,6 @@ def unset_bias(client, user, roles, msg):
 def link_request(client, msg):
     global last_used
 
-    if msg.server is not None and msg.server.name == AOA_SERVER: return
-
     # not a command
     if msg.content[0] != '!': return
 
@@ -274,34 +272,12 @@ def is_mod(server, user):
     mod_role = MOD_ROLE[server.name]
     return any([mod_role == r.name for r in user.roles])
 
-@asyncio.coroutine
-def force_set_bias(client, msg):
-    '''Set bias of another user
-    Format: !bias @<username_mention> idol
-            !bias idol
-    The former only works if mods say it.
-    The latter always works.'''
-    if msg.content[:5] == '!bias':
-        split = msg.content.split()
-        if len(msg.mentions) > 1: return
-        target_user = msg.mentions[0] if len(msg.mentions) == 1 else msg.author
-        # Ordinary users should not be able to set others' biases
-        if target_user != msg.author and not is_mod(msg.server, msg.author): return
-        content = msg.content.lower()
-        for idol_nickname in IDOLS[msg.server.name]:
-            if idol_nickname in content:
-                actual_name = IDOLS[msg.server.name][idol_nickname]
-                role = find_role(msg.server, actual_name)
-                yield from set_bias(client, target_user, role, msg)
-                break
-
 def is_bias_channel(server, channel):
     '''Is 'channel' the bias channel for 'server'?'''
     return channel.name == BIAS_CHANNEL[server.name]
 
 @asyncio.coroutine
 def normal_remove_bias(client, msg):
-    pass
     # works only in the bias channel
     if not is_bias_channel(msg.server, msg.channel): return
 
@@ -329,6 +305,12 @@ def normal_set_bias(client, msg):
 
     user = msg.author
     content = msg.content.lower()
+
+    if content[:len('!random')] == '!random':
+        num_roles = random.randint(1, len(msg.server.roles))
+        roles_to_add = random.sample(msg.server.roles, num_roles)
+        yield from set_bias(client, user, roles_to_add, msg)
+        return
 
     roles_to_add = []
     for idol_nickname in IDOLS[msg.server.name]:
@@ -489,7 +471,6 @@ def on_message(msg):
 
     yield from help_request(client, msg)
     yield from link_request(client, msg)
-    # yield from force_set_bias(client, msg)
     yield from normal_set_bias(client, msg)
     yield from normal_remove_bias(client, msg)
     yield from delete_messages(client, msg)
