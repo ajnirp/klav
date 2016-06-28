@@ -220,6 +220,7 @@ def set_bias(client, user, roles, msg):
     role_str = ', '.join('**' + r.name.title() + '**' for r in roles)
 
     try:
+        print('Adding roles:', [r.name for r in to_add])
         yield from client.replace_roles(user, *to_add)
         response = '{0.mention} Your bias has been set to ' + role_str
         yield from client.send_message(msg.channel, response.format(user))
@@ -307,8 +308,12 @@ def normal_set_bias(client, msg):
     content = msg.content.lower()
 
     if content[:len('!random')] == '!random':
-        num_roles = random.randint(1, len(msg.server.roles))
-        roles_to_add = random.sample(msg.server.roles, num_roles)
+        print(IDOLS[msg.server.name])
+        idol_roles = [r for r in msg.server.roles \
+            if r.name.lower() in IDOLS[msg.server.name].values()]
+        # print('idol_role_names', [r.name for r in idol_roles])
+        num_roles = random.randint(1, len(idol_roles))
+        roles_to_add = random.sample(idol_roles, num_roles)
         yield from set_bias(client, user, roles_to_add, msg)
         return
 
