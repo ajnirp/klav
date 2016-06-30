@@ -24,7 +24,6 @@ LINK_COOLDOWN = 20 # seconds
 
 GSD_SERVER = "Girl's Day"
 AOA_SERVER = "Ace of Angels"
-AO2_SERVER = "AOA8"
 BES_SERVER = "BESTie"
 KNK_SERVER = "Keunakeun (KNK)"
 
@@ -34,12 +33,11 @@ server = None
 CONFIG = {
     GSD_SERVER: 'gsd.txt',
     AOA_SERVER: 'aoa.txt',
-    AO2_SERVER: 'ao2.txt',
     BES_SERVER: 'bestie.txt',
     KNK_SERVER: 'knk.txt',
 }
 
-SERVERS = [GSD_SERVER, AOA_SERVER, AO2_SERVER, BES_SERVER, KNK_SERVER]
+SERVERS = [GSD_SERVER, AOA_SERVER, BES_SERVER, KNK_SERVER]
 
 WELCOME_MSG = {}
 IDOLS = {}
@@ -96,35 +94,25 @@ def read_config():
         HELP_MSG[AOA_SERVER] += ' ' + pic_cmd
     HELP_MSG[AOA_SERVER] += ' time'
 
-    HELP_MSG[AO2_SERVER] = '**Commands**:'
-    for pic_cmd in sorted(LINK_COMMANDS[AO2_SERVER].keys()):
-        HELP_MSG[AO2_SERVER] += ' ' + pic_cmd
-    HELP_MSG[AO2_SERVER] += ' time'
-
     HELP_MSG[BES_SERVER] = '**Commands**:'
     for pic_cmd in sorted(LINK_COMMANDS[BES_SERVER].keys()):
         HELP_MSG[BES_SERVER] += ' ' + pic_cmd
     HELP_MSG[BES_SERVER] += ' time'
 
     HELP_MSG[GSD_SERVER] += '''
-    **Biases**: To set your bias, post the name of your bias in **#whos-your-bias**,\
-    and the bot will set your role to that idol! Alternatively, type *!bias <name>* in any channel.\
-     For example, *!bias minah*. If the bot is offline, don't worry, a mod will come along and do it for you!'''
+    **Biases**: To set your bias, post the name of your bias in **#whos-your-bias**, \
+    and the bot will set your role to that idol. \
+    If the bot is offline, don't worry, a mod will come along and do it for you!'''
 
     HELP_MSG[AOA_SERVER] += '''
-    **Biases**: To set your bias, post the name of your bias in **#call_your_roles**,\
-    and the bot will set your role to that idol! Alternatively, type *!bias <name>* in any channel.\
-     For example, *!bias jimin*. If the bot is offline, don't worry, a mod will come along and do it for you!'''
-
-    HELP_MSG[AO2_SERVER] += '''
-    **Biases**: To set your bias, post the name of your bias in **#call_your_roles**,\
-    and the bot will set your role to that idol! Alternatively, type *!bias <name>* in any channel.\
-     For example, *!bias jimin*. If the bot is offline, don't worry, a mod will come along and do it for you!'''
+    **Biases**: To set your bias, post the name of your bias in **#call_your_roles**, \
+    and the bot will set your role to that idol. \
+    If the bot is offline, don't worry, a mod will come along and do it for you!'''
 
     HELP_MSG[BES_SERVER] += '''
-    **Biases**: To set your bias, post the name of your bias in **#whos-your-bias**,\
-    and the bot will set your role to that idol! Alternatively, type *!bias <name>* in any channel.\
-     For example, *!bias minah*. If the bot is offline, don't worry, a mod will come along and do it for you!'''
+    **Biases**: To set your bias, post the name of your bias in **#whos-your-bias**, \
+    and the bot will set your role to that idol. \
+    If the bot is offline, don't worry, a mod will come along and do it for you!'''
 
 BOT_OWNER_ID = '150919851710480384'
 DILATER_ID = '138855295135907840'
@@ -220,7 +208,7 @@ def set_bias(client, user, roles, msg):
     role_str = ', '.join('**' + r.name.title() + '**' for r in roles)
 
     try:
-        print('Adding roles:', [r.name for r in to_add])
+        print('adding roles:', [r.name for r in to_add])
         yield from client.replace_roles(user, *to_add)
         response = '{0.mention} Your bias has been set to ' + role_str
         yield from client.send_message(msg.channel, response.format(user))
@@ -307,16 +295,6 @@ def normal_set_bias(client, msg):
     user = msg.author
     content = msg.content.lower()
 
-    if content[:len('!random')] == '!random':
-        print(IDOLS[msg.server.name])
-        idol_roles = [r for r in msg.server.roles \
-            if r.name.lower() in IDOLS[msg.server.name].values()]
-        # print('idol_role_names', [r.name for r in idol_roles])
-        num_roles = random.randint(1, len(idol_roles))
-        roles_to_add = random.sample(idol_roles, num_roles)
-        yield from set_bias(client, user, roles_to_add, msg)
-        return
-
     roles_to_add = []
     for idol_nickname in IDOLS[msg.server.name]:
         for word in content.split():
@@ -334,27 +312,6 @@ def help_request(client, msg):
     if msg.content[:8] != '!bothelp': return
     s_name = AOA_SERVER if msg.server is None else msg.server.name
     yield from client.send_message(msg.author, HELP_MSG[s_name])
-
-# @asyncio.coroutine
-# def delete_messages(client, msg):
-#     '''Delete a specified number of messages in the channel
-#     where msg 'msg' was posted. Only works if mods say it.'''
-#     if not is_mod(msg.server, msg.author): return
-#     if not msg.content[:7] == '!delete': return
-#     split = msg.content.split()
-#     if len(split) != 2: return
-#     num_msgs = split[1]
-#     try:
-#         num_msgs = 1 + int(num_msgs)
-#         logs = yield from client.logs_from(msg.channel, limit=num_msgs)
-#         for log_entry in logs:
-#             try:
-#                 yield from client.delete_message(log_entry)
-#             except discord.Forbidden:
-#                 print('cannot delete: ' + log_entry.content)
-#                 continue
-#     except ValueError: # failed to convert split[1] to int
-#         return
 
 @asyncio.coroutine
 def delete_messages(client, msg):
@@ -406,7 +363,6 @@ def reload(client, msg):
 @client.event
 @asyncio.coroutine
 def on_member_ban(member):
-    if member.server.name != AOA_SERVER: return
     log_chan = next(c for c in member.server.channels if c.name == "mod-log")
     resp = '{0.mention} has been banned from the server'
     yield from client.send_message(log_chan, resp.format(member))
@@ -414,7 +370,6 @@ def on_member_ban(member):
 @client.event
 @asyncio.coroutine
 def on_member_unban(member):
-    if member.server.name != AOA_SERVER: return
     log_chan = next(c for c in member.server.channels if c.name == "mod-log")
     resp = '{0.mention} has been unbanned from the server'
     yield from client.send_message(log_chan, resp.format(member))
