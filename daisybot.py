@@ -295,6 +295,10 @@ def normal_set_bias(client, msg):
     user = msg.author
     content = msg.content.lower()
 
+    if content[:len('!random')] == '!random' and msg.author.id == DOLOKO_ID:
+        yield from client.send_message(msg.author, 'lol')
+        return
+
     roles_to_add = []
     for idol_nickname in IDOLS[msg.server.name]:
         for word in content.split():
