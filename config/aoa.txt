@@ -150,3 +150,4 @@ bamboozled	http://i.imgur.com/rwpyzmb.png
 smk	http://i.imgur.com/x52AkoY.jpg
 sexuality	http://i.imgur.com/7ipGizh.png
 smug2	http://i.imgur.com/372Xmo8.png
+fu	http://i.imgur.com/D1ybBO8.jpg
