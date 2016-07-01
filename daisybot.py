@@ -193,7 +193,7 @@ def on_member_remove(member):
     if s_name == AOA_SERVER: return
 
     main_channel = find_channel(server, MAIN_CHANNEL[s_name])
-    fmt = '{0.mention} has left the server'
+    fmt = '**{0.name}** has left the server'
 
     yield from client.send_message(main_channel, fmt.format(member, server))
 
