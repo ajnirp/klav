@@ -8,7 +8,11 @@ call_your_roles
 general
 banana	http://i.imgur.com/BZGYzwE.jpg
 happysohye	http://i.imgur.com/mGyWMyE.jpg
-bored	http://i.imgur.com/fUu5xDG.jpg
+bored	http://i.imgur.com/MLYF3AG.jpg
+bored2	http://i.imgur.com/fUu5xDG.jpg
+fashion	http://i.imgur.com/OWu58zA.jpg
+funnybutsad	http://i.imgur.com/qeXW1o3.png
+annyeong	http://i.imgur.com/8MKGHdv.jpg
 serious	http://i.imgur.com/EyZmUJU.jpg
 disapproval	http://i.imgur.com/h0PuvOV.jpg
 shoes	http://i.imgur.com/rZKwJXm.jpg
@@ -72,6 +76,7 @@ hellosohye	http://i.imgur.com/r7XyMKC.png
 memories	http://i.imgur.com/eDRh7cI.jpg
 rum	http://i.imgur.com/ILf3dwU.jpg
 rum2	http://i.imgur.com/mSouRAK.png
+rum3	http://i.imgur.com/tQYkry9.png
 whygay	http://i.imgur.com/ShHKFGQ.jpg
 rockchoasong	https://www.youtube.com/watch?v=hEMNiPGKESM
 thirsty	https://gfycat.com/FatImpeccableDegu
