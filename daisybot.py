@@ -158,10 +158,6 @@ def on_ready():
     global last_used, client, server
     print('Logged in as', client.user.name)
     last_used = time_now()
-    aoa_server = next(s for s in client.servers if s.name == AOA_SERVER)
-    meme_channel = next(c for c in aoa_server.channels if c.name == "meme_and_chill")
-    if not SILENT_ENTRY:
-        yield from client.send_message(meme_channel, "***HERE COME DAT BOT*** 👌 🔥 💯")
 
 @client.event
 @asyncio.coroutine
