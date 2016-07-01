@@ -413,15 +413,6 @@ def unground_member(client, msg):
     to_add = [r for r in user.roles if r.name != 'Grounded']
     yield from client.replace_roles(user, *to_add)
 
-@asyncio.coroutine
-def ehh(client, msg):
-    if msg.server is not None and msg.server.name != AOA_SERVER: return
-    if msg.content[:len('!eh')] != '!eh': return
-    msg = yield from client.send_message(msg.channel, 'ehhhhh')
-    for i in range(8):
-        time.sleep(2)
-        msg = yield from client.edit_message(msg, msg.content + 'hhhhhhhh')
-
 @client.event
 @asyncio.coroutine
 def on_message(msg):
@@ -442,7 +433,6 @@ def on_message(msg):
     yield from reload(client, msg)
     yield from ground_member(client, msg)
     yield from unground_member(client, msg)
-    yield from ehh(client, msg)
 
 read_config()
 client.run(os.environ['DISCORD_TOKEN'])
