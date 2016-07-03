@@ -344,13 +344,18 @@ def time_check(client, msg):
         resp = urllib.request.urlopen(req)
         page_src = resp.read()
         soup = bs(page_src, 'html.parser')
-        time = soup.find(id='twd').string
+        time_now = soup.find(id='twd').string
         msg_hdr = soup.find(id='msgdiv').h1.string
         place = msg_hdr[len('Time in '):]
         place = place[:(len(place) - len(' now'))]
-        reply = 'Time in **' + place + '**: ' + time
+        print(soup.find(id='twd'))
+        print(soup.find(id='twd').string)
+        print('..')
+        print(time_now, '..', msg_hdr, '..', place)
+        reply = 'Time in **' + place + '**: ' + time_now
         yield from client.send_message(msg.channel, reply)
-    except urllib.error.HTTPError:
+    except Exception as e:
+        print(e, file=sys.stderr)
         return
 
 @asyncio.coroutine
