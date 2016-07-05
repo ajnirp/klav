@@ -348,10 +348,6 @@ def time_check(client, msg):
         msg_hdr = soup.find(id='msgdiv').h1.string
         place = msg_hdr[len('Time in '):]
         place = place[:(len(place) - len(' now'))]
-        print(soup.find(id='twd'))
-        print(soup.find(id='twd').string)
-        print('..')
-        print(time_now, '..', msg_hdr, '..', place)
         reply = 'Time in **' + place + '**: ' + time_now
         yield from client.send_message(msg.channel, reply)
     except Exception as e:
@@ -417,6 +413,8 @@ def unground_member(client, msg):
 @client.event
 @asyncio.coroutine
 def on_message(msg):
+    if msg.server is not None and msg.server.name == AOA_SERVER: return
+
     global client
 
     # ignore empty messages
