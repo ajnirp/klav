@@ -35,9 +35,10 @@ CONFIG = {
     AOA_SERVER: 'aoa.txt',
     BES_SERVER: 'bestie.txt',
     KNK_SERVER: 'knk.txt',
+    FX_SERVER: 'fx.txt',
 }
 
-SERVERS = [GSD_SERVER, AOA_SERVER, BES_SERVER, KNK_SERVER]
+SERVERS = [GSD_SERVER, AOA_SERVER, BES_SERVER, KNK_SERVER, FX_SERVER]
 
 WELCOME_MSG = {}
 IDOLS = {}
@@ -71,7 +72,7 @@ def read_config():
                 val = split[-1]
                 for key in split[:-1]:
                     IDOLS[s_name][key] = val
-            ROLES_TO_AVOID_CHANGING[s_name] = lines[3].split()
+            ROLES_TO_AVOID_CHANGING[s_name] = lines[3].split('\t')
             DEFAULT_ROLE[s_name] = lines[4]
             MOD_ROLE[s_name] = lines[5]
             BIAS_CHANNEL[s_name] = lines[6]
