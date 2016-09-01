@@ -26,6 +26,7 @@ GSD_SERVER = "Girl's Day"
 AOA_SERVER = "Ace of Angels"
 BES_SERVER = "BESTie"
 KNK_SERVER = "Keunakeun (KNK)"
+FX_SERVER = "F(X) (에프엑스)"
 
 client = discord.Client()
 server = None
