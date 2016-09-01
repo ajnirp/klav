@@ -27,6 +27,7 @@ AOA_SERVER = "Ace of Angels"
 BES_SERVER = "BESTie"
 KNK_SERVER = "Keunakeun (KNK)"
 FX_SERVER = "F(X) (에프엑스)"
+SIS_SERVER = "!STAR1!"
 
 client = discord.Client()
 server = None
@@ -37,9 +38,10 @@ CONFIG = {
     BES_SERVER: 'bestie.txt',
     KNK_SERVER: 'knk.txt',
     FX_SERVER: 'fx.txt',
+    SIS_SERVER: 'sis.txt',
 }
 
-SERVERS = [GSD_SERVER, AOA_SERVER, BES_SERVER, KNK_SERVER, FX_SERVER]
+SERVERS = [GSD_SERVER, AOA_SERVER, BES_SERVER, KNK_SERVER, FX_SERVER, SIS_SERVER]
 
 WELCOME_MSG = {}
 IDOLS = {}
