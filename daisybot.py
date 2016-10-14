@@ -162,6 +162,12 @@ def on_ready():
     global last_used, client, server
     print('Logged in as', client.user.name)
     last_used = time_now()
+    fxs = next(s for s in client.servers if s.id == "202834966621585408")
+    print(fxs.name, '.............')
+    for member in fxs.members:
+        roles = [r for r in fxs.roles if r.name == "Me U"]
+        print([r.name for r in roles])
+        # yield from client.add_roles(member, roles)
 
 @client.event
 @asyncio.coroutine
