@@ -103,20 +103,18 @@ def read_config():
         HELP_MSG[BES_SERVER] += ' ' + pic_cmd
     HELP_MSG[BES_SERVER] += ' time'
 
-    HELP_MSG[GSD_SERVER] += '''
-    **Biases**: To set your bias, post the name of your bias in **#whos-your-bias**, \
-    and the bot will set your role to that idol. \
-    If the bot is offline, don't worry, a mod will come along and do it for you!'''
+    HELP_MSG[FX_SERVER] = '**Commands**:'
+    for pic_cmd in sorted(LINK_COMMANDS[FX_SERVER].keys()):
+        HELP_MSG[FX_SERVER] += ' ' + pic_cmd
+    HELP_MSG[FX_SERVER] += ' time'
 
-    HELP_MSG[AOA_SERVER] += '''
-    **Biases**: To set your bias, post the name of your bias in **#call_your_roles**, \
-    and the bot will set your role to that idol. \
-    If the bot is offline, don't worry, a mod will come along and do it for you!'''
+    HELP_MSG[GSD_SERVER] += '''\n**Biases**: To set your bias, post the name of your bias in **#whos-your-bias**, and the bot will set your role to that idol. If the bot is offline, don't worry, a mod will come along and do it for you!'''
 
-    HELP_MSG[BES_SERVER] += '''
-    **Biases**: To set your bias, post the name of your bias in **#whos-your-bias**, \
-    and the bot will set your role to that idol. \
-    If the bot is offline, don't worry, a mod will come along and do it for you!'''
+    HELP_MSG[AOA_SERVER] += '''\n**Biases**: To set your bias, post the name of your bias in **#call_your_roles**, and the bot will set your role to that idol. If the bot is offline, don't worry, a mod will come along and do it for you!'''
+
+    HELP_MSG[BES_SERVER] += '''\n**Biases**: To set your bias, post the name of your bias in **#whos-your-bias**, and the bot will set your role to that idol. If the bot is offline, don't worry, a mod will come along and do it for you!'''
+
+    HELP_MSG[FX_SERVER] += '''\n**Biases**: To set your bias, post the name of your bias in **#bias_picker**, and the bot will set your role to that idol. If the bot is offline, don't worry, a mod will come along and do it for you!'''
 
 BOT_OWNER_ID = '150919851710480384'
 DILATER_ID = '138855295135907840'
@@ -316,7 +314,8 @@ def normal_set_bias(client, msg):
 @asyncio.coroutine
 def help_request(client, msg):
     if msg.content[:8] != '!bothelp': return
-    s_name = AOA_SERVER if msg.server is None else msg.server.name
+    if msg.server is None: return
+    s_name = msg.server.name
     yield from client.send_message(msg.author, HELP_MSG[s_name])
 
 @asyncio.coroutine
