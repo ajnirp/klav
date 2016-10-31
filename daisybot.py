@@ -91,22 +91,18 @@ def read_config():
     HELP_MSG[GSD_SERVER] = '**Commands**:'
     for pic_cmd in sorted(LINK_COMMANDS[GSD_SERVER].keys()):
         HELP_MSG[GSD_SERVER] += ' ' + pic_cmd
-    HELP_MSG[GSD_SERVER] += ' goodnight time'
 
     HELP_MSG[AOA_SERVER] = '**Commands**:'
     for pic_cmd in sorted(LINK_COMMANDS[AOA_SERVER].keys()):
         HELP_MSG[AOA_SERVER] += ' ' + pic_cmd
-    HELP_MSG[AOA_SERVER] += ' time'
 
     HELP_MSG[BES_SERVER] = '**Commands**:'
     for pic_cmd in sorted(LINK_COMMANDS[BES_SERVER].keys()):
         HELP_MSG[BES_SERVER] += ' ' + pic_cmd
-    HELP_MSG[BES_SERVER] += ' time'
 
     HELP_MSG[FX_SERVER] = '**Commands**:'
     for pic_cmd in sorted(LINK_COMMANDS[FX_SERVER].keys()):
         HELP_MSG[FX_SERVER] += ' ' + pic_cmd
-    HELP_MSG[FX_SERVER] += ' time'
 
     HELP_MSG[GSD_SERVER] += '''\n**Biases**: To set your bias, post the name of your bias in **#whos-your-bias**, and the bot will set your role to that idol. If the bot is offline, don't worry, a mod will come along and do it for you!'''
 
@@ -134,24 +130,6 @@ def find_server(client, server_name):
 
 def find_channel(server, channel_name):
     return next(c for c in server.channels if c.name == channel_name)
-
-# Need to generalise this to arbit events
-def countdown(client, msg):
-    if msg.author.name != 'kwon': return
-    if msg.server.name != AOA_SERVER: return
-    if msg.content[:len('!countdown')] != '!countdown': return
-    RELEASE = 'May 16 2016 12:00 AM'
-    RELEASE = datetime.strptime(RELEASE, '%b %d %Y %I:%M %p')
-    # general_chan = find_channel(client, MAIN_CHANNEL[msg.server.name])
-    diff = RELEASE - datetime.now()
-    secs = diff.seconds
-    hrs = secs // 3600
-    secs -= hrs * 3600
-    mins = secs // 60
-    secs -= mins * 60
-    secs %= 60
-    reply = 'Time until Good Luck: **' + str(hrs) + 'h' + str(mins) + 'm' + str(secs) + 's**!'
-    yield from client.send_message(msg.channel, reply)
 
 @client.event
 @asyncio.coroutine
@@ -336,6 +314,7 @@ def delete_messages(client, msg):
     except ValueError: # failed to convert split[1] to int
         return
 
+'''
 @asyncio.coroutine
 def time_check(client, msg):
     if msg.content[:5] != '!time': return
@@ -358,6 +337,7 @@ def time_check(client, msg):
     except Exception as e:
         print(e, file=sys.stderr)
         return
+'''
 
 @asyncio.coroutine
 def reload(client, msg):
