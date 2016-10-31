@@ -47,7 +47,7 @@ WELCOME_MSG = {}
 IDOLS = {}
 ROLES_TO_AVOID_CHANGING = {}
 DEFAULT_ROLE = {}
-MOD_ROLE = {}
+MOD_ROLES = {}
 BIAS_CHANNEL = {}
 MAIN_CHANNEL = {}
 LINK_COMMANDS = {}
@@ -77,7 +77,7 @@ def read_config():
                     IDOLS[s_name][key] = val
             ROLES_TO_AVOID_CHANGING[s_name] = lines[3].split('\t')
             DEFAULT_ROLE[s_name] = lines[4]
-            MOD_ROLE[s_name] = lines[5]
+            MOD_ROLES[s_name] = lines[5].split('\t')
             BIAS_CHANNEL[s_name] = lines[6]
             MAIN_CHANNEL[s_name] = lines[7]
             LINK_COMMANDS[s_name] = {}
@@ -162,12 +162,6 @@ def on_ready():
     global last_used, client, server
     print('Logged in as', client.user.name)
     last_used = time_now()
-    fxs = next(s for s in client.servers if s.id == "202834966621585408")
-    print(fxs.name, '.............')
-    for member in fxs.members:
-        roles = [r for r in fxs.roles if r.name == "Me U"]
-        print([r.name for r in roles])
-        # yield from client.add_roles(member, roles)
 
 @client.event
 @asyncio.coroutine
@@ -264,8 +258,10 @@ def link_request(client, msg):
 
 def is_mod(server, user):
     '''Is the user a mod on the specified server?'''
-    mod_role = MOD_ROLE[server.name]
-    return any([mod_role == r.name for r in user.roles])
+    for r in user.roles:
+        for m_r in MOD_ROLES[server.name]:
+            if m_r == r.name:
+                return True
 
 def is_bias_channel(server, channel):
     '''Is 'channel' the bias channel for 'server'?'''

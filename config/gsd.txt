@@ -5,7 +5,7 @@ Mod	Admin	Dai5y
 Dai5y
 Mod
 whos-your-bias
-dai5ys
+dai5y-chat
 eat http://i.imgur.com/p3JoaIm.jpg
 police http://i.imgur.com/tELSyyM.jpg
 sad http://i.imgur.com/v7W6GWY.jpg
