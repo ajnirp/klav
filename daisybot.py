@@ -137,6 +137,7 @@ def on_ready():
     global CHANNEL
     global last_used, client, server
     print('Logged in as', client.user.name)
+    print('version', discord.version_info)
     last_used = time_now()
 
 @client.event
@@ -413,6 +414,7 @@ def on_message(msg):
     yield from normal_set_bias(client, msg)
     yield from normal_remove_bias(client, msg)
     yield from delete_messages(client, msg)
+    yield from time_check(client, msg)
     yield from reload(client, msg)
     yield from ground_member(client, msg)
     yield from unground_member(client, msg)
