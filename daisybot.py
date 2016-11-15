@@ -52,8 +52,6 @@ BIAS_CHANNEL = {}
 MAIN_CHANNEL = {}
 LINK_COMMANDS = {}
 
-last_used = None
-
 HELP_MSG = {s:'' for s in SERVERS}
 
 def time_now():
@@ -135,9 +133,9 @@ def find_channel(server, channel_name):
 @asyncio.coroutine
 def on_ready():
     global CHANNEL
-    global last_used, client, server
+    global client, server
     print('Logged in as', client.user.name)
-    last_used = time_now()
+    print('version', discord.version_info)
 
 @client.event
 @asyncio.coroutine
@@ -211,8 +209,6 @@ def unset_bias(client, user, roles, msg):
 
 @asyncio.coroutine
 def link_request(client, msg):
-    global last_used
-
     # not a command
     if msg.content[0] != '!': return
 
@@ -223,14 +219,7 @@ def link_request(client, msg):
     if pic_cmd not in LINK_COMMANDS[s_name]: return
     url = LINK_COMMANDS[s_name][pic_cmd]
 
-    now = time_now()
-    # diff = now - last_used
-    diff = LINK_COOLDOWN + 1
-    if diff < LINK_COOLDOWN:
-        return
-    else:
-        last_used = now
-        yield from client.send_message(msg.channel, url)
+    yield from client.send_message(msg.channel, url)
 
 def is_mod(server, user):
     '''Is the user a mod on the specified server?'''
@@ -314,31 +303,6 @@ def delete_messages(client, msg):
     except ValueError: # failed to convert split[1] to int
         return
 
-'''
-@asyncio.coroutine
-def time_check(client, msg):
-    if msg.content[:5] != '!time': return
-    split = msg.content.split()
-    if len(split) < 2: return
-    place = '%20'.join(s.title() for s in split[1:])
-    url = 'http://time.is/' + place
-    req = urllib.request.Request(url, data=None,
-                headers={'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'})
-    try:
-        resp = urllib.request.urlopen(req)
-        page_src = resp.read()
-        soup = bs(page_src, 'html.parser')
-        time_now = soup.find(id='twd').string
-        msg_hdr = soup.find(id='msgdiv').h1.string
-        place = msg_hdr[len('Time in '):]
-        place = place[:(len(place) - len(' now'))]
-        reply = 'Time in **' + place + '**: ' + time_now
-        yield from client.send_message(msg.channel, reply)
-    except Exception as e:
-        print(e, file=sys.stderr)
-        return
-'''
-
 @asyncio.coroutine
 def reload(client, msg):
     if msg.content != '!reload': return
@@ -413,7 +377,6 @@ def on_message(msg):
     yield from normal_set_bias(client, msg)
     yield from normal_remove_bias(client, msg)
     yield from delete_messages(client, msg)
-    yield from time_check(client, msg)
     yield from reload(client, msg)
     yield from ground_member(client, msg)
     yield from unground_member(client, msg)
