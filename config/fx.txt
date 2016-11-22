@@ -39,3 +39,4 @@ mwah2	http://i.imgur.com/wNzv2nz.gif
 grr	http://i.imgur.com/Skk1MCI.gif
 pahty	https://cdn.discordapp.com/attachments/202834966621585408/247909485190840320/sulli_clubbing.gif
 fy,fyeah,fuckyeah	https://cdn.discordapp.com/attachments/202834966621585408/249410137989709824/luna_fuck_yeah_meme.gif
+flags	:flag_hk: :flag_ph: :flag_in: :flag_cn: :flag_vn: :flag_cz: :flag_gb: :flag_pa: :flag_us: :flag_ca: :flag_au: :flag_gu:
