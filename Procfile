@@ -1,1 +1,1 @@
-worker: python3 daisybot.py -q
+worker: python3 klav.py

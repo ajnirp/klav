@@ -1,8 +1,0 @@
-!STAR1!
-welcome to the SISTAR server!
-hyolyn,hyolin,hyoryn,hyorin,hyorin	dasom,som,dasom	bora,bora	soyu,soyou,soyou	hyejung,hyejung
-Mods	@for help	Nadeko	Mee6	star1
-star1
-Mods
-rolecall
-general
