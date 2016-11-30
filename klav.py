@@ -2,6 +2,7 @@
 
 import asyncio
 import discord
+import notifs
 import os
 import util
 
@@ -50,6 +51,17 @@ async def on_message(message):
     await util.command(message, servers, client)
     await util.help(message, servers, client)
 
+    await notifs.add_notif(message, servers, client)
+    await notifs.check_notifs(message, servers, client)
+    await notifs.view_notifs(message, servers, client)
+
+async def write_notifs_task(client):
+    await client.wait_until_ready()
+    while not client.is_closed:
+        # notifs.write_notifs_all(servers, client)
+        await asyncio.sleep(30)
+
 if __name__ == '__main__':
     util.read_configs(servers)
+    client.loop.create_task(write_notifs_task(client))
     client.run(os.environ['F_BOT_TOKEN'])

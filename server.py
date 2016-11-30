@@ -1,5 +1,5 @@
 class Server:
-    def __init__(self, config_file):
+    def __init__(self, config_file, notifs_file):
         with open(config_file, 'r') as f:
             lines = [l.strip() for l in f.readlines()]
             self.id = config_file
@@ -21,3 +21,9 @@ class Server:
                 commands, response = command_line.split('\t')
                 for command in commands.split(','):
                     self.command_map[command] = response
+        with open(notifs_file, 'r') as f:
+            lines = [l.strip() for l in f.readlines()]
+            self.notifs_map = {}
+            for line in lines:
+                notif, target = line.split('\t')
+                self.notifs_map[notif] = target

@@ -1,6 +1,7 @@
 import discord
 import os
 import server
+import time
 
 async def report_bias(message, roles, client):
     report = '{0.mention} Your bias has been set to '.format(message.author)
@@ -25,9 +26,13 @@ async def assign_default_role(member, servers, client):
 def read_configs(servers):
     config_dir = os.path.join('.', 'config')
     config_files = os.listdir(config_dir)
-    for s_id in config_files:
-        file_path = os.path.join(config_dir, s_id)
-        servers[s_id] = server.Server(file_path)
+    notifs_dir = os.path.join('.', 'notifs')
+    notifs_files = os.listdir(notifs_dir)
+    for config_file, notifs_file in zip(config_files, notifs_files):
+        config_file_path = os.path.join(config_dir, config_file)
+        notifs_file_path = os.path.join(notifs_dir, notifs_file)
+        s_id = config_file
+        servers[s_id] = server.Server(config_file_path, notifs_file_path)
 
 def is_mod(user, s_id, servers):
     server = servers[s_id]
@@ -67,3 +72,6 @@ async def help(message, servers, client):
     server = servers[message.server.id]
     help_str = 'Commands: '  + ', '.join(sorted(server.command_map.keys()))
     await client.send_message(message.author, help_str)
+
+def now():
+    return time.strftime('[%y%m%d %H:%M]')
