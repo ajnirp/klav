@@ -70,7 +70,7 @@ async def kick_members(message, servers, client):
         await client.send_message(mod_chan, report)
 
 async def command(message, servers, client):
-    if message.content[0] != '.': return
+    if message.content[0] not in '.!': return
     server = servers[message.server.id]
     command_str = message.content[1:]
     if command_str in server.command_map:
@@ -78,7 +78,7 @@ async def command(message, servers, client):
         await client.send_message(message.channel, response)
 
 async def help(message, servers, client):
-    if message.content != '.h': return
+    if message.content not in ['.h', '!h']: return
     server = servers[message.server.id]
     help_str = 'Commands: '  + ', '.join(sorted(server.command_map.keys()))
     await client.send_message(message.author, help_str)

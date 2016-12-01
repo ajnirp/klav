@@ -12,9 +12,10 @@ async def add_notif(message, servers, client):
         info = '```Usage: .an <notification>.\nExample: .an pink tape\nThis sets a notification for "pink tape".```'
         await client.send_message(message.channel, info)
 
-    prefix = '.an'
-    if not message.content.startswith(prefix): return
-    notif = message.content[len(prefix)+1:].strip()
+    prefix = 'an'
+    if message.content[0] not in '.!': return
+    if not message.content[1:].startswith(prefix): return
+    notif = message.content[len(prefix)+2:].strip()
     if notif == '':
         await show_usage(message, client)
         return
@@ -41,9 +42,10 @@ async def remove_notif(message, servers, client):
         info = '```Usage: .rn <notification>.\nExample: .rn pink tape\nThis removes the notification for "pink tape", assuming you had set it previously.```'
         await client.send_message(message.channel, info)
 
-    prefix = '.rn'
-    if not message.content.startswith(prefix): return
-    notif = message.content[len(prefix)+1:].strip()
+    prefix = 'rn'
+    if message.content[0] not in '.!': return
+    if not message.content[1:].startswith(prefix): return
+    notif = message.content[len(prefix)+2:].strip()
     if notif == '':
         await show_usage(message, client)
         return
@@ -72,7 +74,7 @@ async def check_notifs(message, servers, client):
                 await client.send_message(target, report)
 
 async def view_notifs(message, servers, client):
-    if not message.content.startswith('.vn'): return
+    if message.content not in ['.vn', '!vn']: return
     server = servers[message.server.id]
     notifs = [notif for notif, target_ids in \
               server.notifs_map.items() if message.author.id in target_ids]

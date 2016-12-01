@@ -46,7 +46,7 @@ async def on_message(message):
 
     await notifs.check_notifs(message, servers, client)
 
-    if message.content[0] not in ',.': return
+    if message.content[0] not in ',!.': return
 
     # Moderators only
     await util.delete_messages(message, servers, client)
