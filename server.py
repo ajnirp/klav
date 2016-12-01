@@ -1,8 +1,12 @@
 class Server:
-    def __init__(self, config_file, notifs_file):
-        with open(config_file, 'r') as f:
+    def __init__(self, s_id, config_file_path, notifs_file_path):
+            self.id = s_id
+            self.read_config(config_file_path)
+            self.read_notifs(notifs_file_path)
+
+    def read_config(self, config_file_path):
+        with open(config_file_path, 'r') as f:
             lines = [l.strip() for l in f.readlines()]
-            self.id = config_file
             self.welcome_chan = lines[0]
             self.main_chan = lines[1]
             self.mod_chan = lines[2]
@@ -21,9 +25,14 @@ class Server:
                 commands, response = command_line.split('\t')
                 for command in commands.split(','):
                     self.command_map[command] = response
-        with open(notifs_file, 'r') as f:
+
+    def read_notifs(self, notifs_file_path):
+        with open(notifs_file_path, 'r') as f:
             lines = [l.strip() for l in f.readlines()]
             self.notifs_map = {}
             for line in lines:
-                notif, target = line.split('\t')
-                self.notifs_map[notif] = target
+                split = line.split('\t')
+                notif, targets = split[0], split[1:]
+                self.notifs_map[notif] = set()
+                for target in targets.split(' '):
+                    self.notifs_map[notif].add(target)
