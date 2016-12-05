@@ -1,6 +1,7 @@
 import asyncio
 import discord
 import os
+import random
 import server
 import time
 
@@ -38,11 +39,14 @@ def read_configs(servers):
     config_files = os.listdir(config_dir)
     notifs_dir = os.path.join('.', 'notifs')
     notifs_files = os.listdir(notifs_dir)
-    for config_file, notifs_file in zip(config_files, notifs_files):
+    daily_dir = os.path.join('.', 'daily')
+    daily_files = os.listdir(daily_dir)
+    for config_file, notifs_file, daily_file in zip(config_files, notifs_files, daily_files):
         config_file_path = os.path.join(config_dir, config_file)
         notifs_file_path = os.path.join(notifs_dir, notifs_file)
+        daily_file_path = os.path.join(daily_dir, daily_file)
         s_id = config_file
-        servers[s_id] = server.Server(config_file, config_file_path, notifs_file_path)
+        servers[s_id] = server.Server(config_file, config_file_path, notifs_file_path, daily_file_path)
 
 def is_mod(user, s_id, servers):
     server = servers[s_id]
@@ -82,6 +86,14 @@ async def help(message, servers, client):
     server = servers[message.server.id]
     help_str = 'Commands: '  + ', '.join(sorted(server.command_map.keys()))
     await client.send_message(message.author, help_str)
+
+async def post_daily_pic(server, client):
+    if len(server.daily_pics) > 0:
+        url_fragment = random.choice(server.daily_pics)
+        url = 'http://i.imgur.com/{}.jpg'.format(url_fragment)
+        report = 'Daily pic: {}'.format(url)
+        main_chan = client.get_channel(server.main_chan)
+        await client.send_message(main_chan, report)
 
 def now():
     return time.strftime('[%y%m%d %H:%M]')

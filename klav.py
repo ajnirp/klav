@@ -66,7 +66,15 @@ async def write_notifs_task(client):
         print('wrote notifications file')
         await asyncio.sleep(600)
 
+async def daily_post(client):
+    await client.wait_until_ready()
+    while not client.is_closed:
+        for server in servers.values():
+            await util.post_daily_pic(server, client)
+        await asyncio.sleep(24*3600)
+
 if __name__ == '__main__':
     util.read_configs(servers)
     client.loop.create_task(write_notifs_task(client))
+    client.loop.create_task(daily_post(client))
     client.run(os.environ['F_BOT_TOKEN'])

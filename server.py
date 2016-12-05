@@ -1,8 +1,9 @@
 class Server:
-    def __init__(self, s_id, config_file_path, notifs_file_path):
+    def __init__(self, s_id, config_file_path, notifs_file_path, daily_file_path):
             self.id = s_id
             self.read_config(config_file_path)
             self.read_notifs(notifs_file_path)
+            self.read_daily(daily_file_path)
 
     def read_config(self, config_file_path):
         with open(config_file_path, 'r') as f:
@@ -36,3 +37,7 @@ class Server:
                 self.notifs_map[notif] = set()
                 for target in targets.split(' '):
                     self.notifs_map[notif].add(target)
+
+    def read_daily(self, daily_file_path):
+        with open(daily_file_path, 'r') as f:
+            self.daily_pics = f.read().strip().split()
