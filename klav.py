@@ -76,5 +76,5 @@ async def daily_post(client):
 if __name__ == '__main__':
     util.read_configs(servers)
     client.loop.create_task(write_notifs_task(client))
-    client.loop.create_task(daily_post(client))
+    # client.loop.create_task(daily_post(client))
     client.run(os.environ['F_BOT_TOKEN'])

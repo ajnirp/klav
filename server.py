@@ -10,19 +10,18 @@ class Server:
             lines = [l.strip() for l in f.readlines()]
             self.welcome_chan = lines[0]
             self.main_chan = lines[1]
-            self.mod_chan = lines[2]
-            self.bias_chan = lines[3]
-            self.default_role = lines[4]
-            self.welcome_msg = lines[5]
-            self.mod_roles = lines[6].split()
+            self.bias_chan = lines[2]
+            self.default_role = lines[3]
+            self.welcome_msg = lines[4]
+            self.mod_roles = lines[5].split()
             self.role_map = {}
-            for keyword_list in lines[7].split(':'):
+            for keyword_list in lines[6].split(':'):
                 split = keyword_list.split(',')
                 role = split[-1]
                 for keyword in split[:-1]:
                     self.role_map[keyword] = role
             self.command_map = {}
-            for command_line in lines[8:]:
+            for command_line in lines[7:]:
                 commands, response = command_line.split('\t')
                 for command in commands.split(','):
                     self.command_map[command] = response

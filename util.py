@@ -68,10 +68,10 @@ async def kick_members(message, servers, client):
     for member in message.mentions:
         await client.kick(member)
         server = servers[message.server.id]
-        mod_chan = client.get_channel(server.mod_chan)
+        main_chan = client.get_channel(server.main_chan)
         report = '**{0.name}** was kicked by {1.mention}'
         report = report.format(member, message.author)
-        await client.send_message(mod_chan, report)
+        await client.send_message(main_chan, report)
 
 async def command(message, servers, client):
     if message.content[0] not in '.!': return
