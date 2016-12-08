@@ -13,6 +13,8 @@ class Server:
             self.bias_chan = lines[2]
             self.default_role = lines[3]
             self.welcome_msg = lines[4]
+            if self.welcome_msg is '':
+                self.welcome_msg = None
             self.mod_roles = lines[5].split()
             self.role_map = {}
             for keyword_list in lines[6].split(':'):
