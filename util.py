@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import discord
 import os
 import random
@@ -91,9 +92,14 @@ async def post_daily_pic(server, client):
     if len(server.daily_pics) > 0:
         url_fragment = random.choice(server.daily_pics)
         url = 'http://i.imgur.com/{}.jpg'.format(url_fragment)
-        report = 'Daily pic: {}'.format(url)
+        pic = 'Daily pic: {}'.format(url)
         main_chan = client.get_channel(server.main_chan)
-        await client.send_message(main_chan, report)
+        await client.send_message(main_chan, pic)
 
 def now():
     return time.strftime('[%y%m%d %H:%M]')
+
+def is_midnight():
+    now = datetime.datetime.now()
+    print(now.hour, now.minute, now.second)
+    return now.hour == 0 and now.minute == 30
