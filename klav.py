@@ -45,7 +45,7 @@ async def on_message(message):
     if message.channel.id == server.bias_chan:
         await util.set_bias(message, servers, client)
 
-    await notifs.check_notifs(message, servers, client)
+    # await notifs.check_notifs(message, servers, client)
 
     if message.content[0] not in ',!.': return
 
@@ -56,9 +56,9 @@ async def on_message(message):
     # @everyone
     await util.command(message, servers, client)
     await util.help(message, servers, client)
-    await notifs.add_notif(message, servers, client)
-    await notifs.remove_notif(message, servers, client)
-    await notifs.view_notifs(message, servers, client)
+    # await notifs.add_notif(message, servers, client)
+    # await notifs.remove_notif(message, servers, client)
+    # await notifs.view_notifs(message, servers, client)
 
 async def write_notifs_task(client):
     await client.wait_until_ready()

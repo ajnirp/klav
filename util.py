@@ -101,5 +101,4 @@ def now():
 
 def is_midnight():
     now = datetime.datetime.now()
-    print(now.hour, now.minute, now.second)
-    return now.hour == 0 and now.minute == 30
+    return now.hour == 6 and now.minute == 0
