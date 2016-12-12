@@ -88,17 +88,17 @@ async def help(message, servers, client):
     help_str = 'Commands: '  + ', '.join(sorted(server.command_map.keys()))
     await client.send_message(message.author, help_str)
 
-async def post_daily_pic(server, client):
+async def post_periodic_pic(server, client):
     if len(server.daily_pics) > 0:
         url_fragment = random.choice(server.daily_pics)
         url = 'http://i.imgur.com/{}.jpg'.format(url_fragment)
-        pic = 'Daily pic: {}'.format(url)
         main_chan = client.get_channel(server.main_chan)
-        await client.send_message(main_chan, pic)
+        await client.send_message(main_chan, url)
 
 def now():
     return time.strftime('[%y%m%d %H:%M]')
 
-def is_midnight():
+def time_to_post():
+    # post four times a day
     now = datetime.datetime.now()
-    return now.hour == 6 and now.minute == 0
+    return now.hour % 6 == 2 and now.minute == 0

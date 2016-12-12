@@ -67,16 +67,16 @@ async def write_notifs_task(client):
         print('wrote notifications file')
         await asyncio.sleep(600)
 
-async def daily_post(client):
+async def periodic_post(client):
     await client.wait_until_ready()
     while not client.is_closed:
         for server in servers.values():
-            if util.is_midnight():
-                await util.post_daily_pic(server, client)
+            if util.time_to_post():
+                await util.post_periodic_pic(server, client)
         await asyncio.sleep(60)
 
 if __name__ == '__main__':
     util.read_configs(servers)
     # client.loop.create_task(write_notifs_task(client))
-    client.loop.create_task(daily_post(client))
+    client.loop.create_task(periodic_post(client))
     client.run(os.environ['F_BOT_TOKEN'])
