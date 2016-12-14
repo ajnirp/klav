@@ -101,4 +101,4 @@ def now():
 def time_to_post():
     # post four times a day
     now = datetime.datetime.now()
-    return now.hour % 6 == 2 and now.minute == 0
+    return now.hour % 4 == 2 and now.minute == 0
