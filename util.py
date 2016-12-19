@@ -95,6 +95,13 @@ async def post_periodic_pic(server, client):
         main_chan = client.get_channel(server.main_chan)
         await client.send_message(main_chan, url)
 
+async def dialogue(message, _, client):
+    condition = 'I love you Klav'
+    if message.content.lower()[:len(condition)] != condition.lower(): return
+    dest = message.author if message.server is None else message.channel
+    reply = 'I love you too {0.mention}'.format(message.author)
+    await client.send_message(dest, reply)
+
 def now():
     return time.strftime('[%y%m%d %H:%M]')
 
