@@ -39,7 +39,6 @@ async def on_member_remove(member):
 async def on_message(message):
     if message.server is None: return
     if message.author.id == client.user.id: return
-    if message.author.id == '192481231487762432': return
     if len(message.content) == 0: return
 
     server = servers[message.server.id]
@@ -70,7 +69,7 @@ async def write_notifs_task(client):
         print('wrote notifications file')
         await asyncio.sleep(600)
 
-async def periodic_post(client):
+async def periodic_post_task(client):
     await client.wait_until_ready()
     while not client.is_closed:
         for server in servers.values():
@@ -78,8 +77,15 @@ async def periodic_post(client):
                 await util.post_periodic_pic(server, client)
         await asyncio.sleep(60)
 
+# async def rss_reader_task(client):
+#     await client.wait_until_ready()
+#     while not client.is_closed():
+#         for server in servers.values():
+#             server.rss.update_all()
+#         await asyncio.sleep(300)
+
 if __name__ == '__main__':
     util.read_configs(servers)
     # client.loop.create_task(write_notifs_task(client))
-    client.loop.create_task(periodic_post(client))
+    client.loop.create_task(periodic_post_task(client))
     client.run(os.environ['F_BOT_TOKEN'])
