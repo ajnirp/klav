@@ -39,6 +39,7 @@ async def on_member_remove(member):
 async def on_message(message):
     if message.server is None: return
     if message.author.id == client.user.id: return
+    if message.author.id == '192481231487762432': return
     if len(message.content) == 0: return
 
     server = servers[message.server.id]
