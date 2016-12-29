@@ -100,8 +100,6 @@ async def dialogue(message, _, client):
     if message.content.lower()[:len(condition)] != condition.lower(): return
     dest = message.author if message.server is None else message.channel
     reply = 'I love you too {0.mention}'.format(message.author)
-    if message.author.id == '192481231487762432':
-        reply = 'hmph {0.mention}'.format(message.author)
     await client.send_message(dest, reply)
 
 def now():
