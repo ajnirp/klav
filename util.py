@@ -102,6 +102,14 @@ async def dialogue(message, _, client):
     reply = 'I love you too {0.mention}'.format(message.author)
     await client.send_message(dest, reply)
 
+async def check_musicbot(music_voice_chan, music_text_chan, bot_id, client):
+    voice_chan = client.get_channel(music_voice_chan)
+    bot_connected = any(member.id == bot_id for member in voice_chan.voice_members)
+    if not bot_connected:
+        print('Detected disconnected bot, restarting...')
+        text_chan = client.get_channel(music_text_chan)
+        await client.send_message(text_chan, '+restart')
+
 def now():
     return time.strftime('[%y%m%d %H:%M]')
 

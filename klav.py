@@ -77,6 +77,12 @@ async def periodic_post_task(client):
                 await util.post_periodic_pic(server, client)
         await asyncio.sleep(60)
 
+async def check_musicbot_task(client):
+    await client.wait_until_ready()
+    while not client.is_closed:
+        await util.check_musicbot('202834966621585409', '203320553430450177', '197743740411052032', client)
+        await asyncio.sleep(60)
+
 # async def rss_reader_task(client):
 #     await client.wait_until_ready()
 #     while not client.is_closed():
@@ -88,4 +94,5 @@ if __name__ == '__main__':
     util.read_configs(servers)
     # client.loop.create_task(write_notifs_task(client))
     client.loop.create_task(periodic_post_task(client))
+    client.loop.create_task(check_musicbot_task(client))
     client.run(os.environ['F_BOT_TOKEN'])
