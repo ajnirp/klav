@@ -94,5 +94,5 @@ if __name__ == '__main__':
     util.read_configs(servers)
     # client.loop.create_task(write_notifs_task(client))
     client.loop.create_task(periodic_post_task(client))
-    client.loop.create_task(check_musicbot_task(client))
+    # client.loop.create_task(check_musicbot_task(client))
     client.run(os.environ['F_BOT_TOKEN'])
