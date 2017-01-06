@@ -88,6 +88,19 @@ async def help(message, servers, client):
     help_str = 'Commands: '  + ', '.join(sorted(server.command_map.keys()))
     await client.send_message(message.author, help_str)
 
+async def search(message, servers, client):
+    prefix = ',s '
+    if not is_mod(message.author, message.server.id, servers): return
+    if not message.content.startswith(prefix): return
+    query = message.content[len(prefix):]
+    skip = True
+    async for entry in client.logs_from(message.channel, limit=5000):
+        if skip: skip = False; continue # skip the first element
+        if query in entry.content:
+            timestamp = entry.timestamp.strftime('%y%m%d %H:%M')
+            report = '[{}] {}: {}'.format(timestamp, entry.author.name, entry.content)
+            await client.send_message(message.channel, report)
+
 async def post_periodic_pic(server, client):
     if len(server.daily_pics) > 0:
         url_fragment = random.choice(server.daily_pics)

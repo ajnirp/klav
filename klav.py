@@ -12,8 +12,6 @@ servers = {}
 @client.event
 async def on_ready():
     print('Logged in as:', client.user.name)
-    print('Client ID:', client.user.id)
-    print('Version number:', discord.version_info)
 
 @client.event
 async def on_member_join(member):
@@ -54,6 +52,7 @@ async def on_message(message):
     # Moderators only
     await util.delete_messages(message, servers, client)
     await util.kick_members(message, servers, client)
+    await util.search(message, servers, client)
 
     # @everyone
     await util.command(message, servers, client)
