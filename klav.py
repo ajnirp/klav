@@ -61,6 +61,25 @@ async def on_message(message):
     # await notifs.remove_notif(message, servers, client)
     # await notifs.view_notifs(message, servers, client)
 
+@client.event
+async def on_message_delete(message):
+    if message.server is None: return
+    if message.author.id == client.user.id: return
+
+    # Log deleted messages if configured to do so for that server
+    server = servers[message.server.id]
+    if server.log_chan is None: return
+
+    # Do not log messages that have been deleted from the log channel
+    channel = message.channel
+    if message.channel.id == server.log_chan: return
+
+    log_channel = client.get_channel(server.log_chan)
+    timestamp = message.timestamp.strftime('%y%m%d %H:%M')
+    report = '[{}] [{}] {}: {}'.format(timestamp, message.channel.name,
+            message.author.name, message.content)
+    await client.send_message(log_channel, report)
+
 async def write_notifs_task(client):
     await client.wait_until_ready()
     while not client.is_closed:

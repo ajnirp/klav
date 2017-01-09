@@ -11,19 +11,22 @@ class Server:
             self.welcome_chan = lines[0]
             self.main_chan = lines[1]
             self.bias_chan = lines[2]
-            self.default_role = lines[3]
-            self.welcome_msg = lines[4]
+            self.log_chan = lines[3]
+            if self.log_chan is '':
+                self.log_chan = None
+            self.default_role = lines[4]
+            self.welcome_msg = lines[5]
             if self.welcome_msg is '':
                 self.welcome_msg = None
-            self.mod_roles = lines[5].split()
+            self.mod_roles = lines[6].split()
             self.role_map = {}
-            for keyword_list in lines[6].split(':'):
+            for keyword_list in lines[7].split(':'):
                 split = keyword_list.split(',')
                 role = split[-1]
                 for keyword in split[:-1]:
                     self.role_map[keyword] = role
             self.command_map = {}
-            for command_line in lines[7:]:
+            for command_line in lines[8:]:
                 commands, response = command_line.split('\t')
                 for command in commands.split(','):
                     self.command_map[command] = response
