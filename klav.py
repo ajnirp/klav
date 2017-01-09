@@ -63,21 +63,47 @@ async def on_message(message):
 
 @client.event
 async def on_message_delete(message):
+    '''Log deleted messages if configured to do so for that server'''
     if message.server is None: return
     if message.author.id == client.user.id: return
 
-    # Log deleted messages if configured to do so for that server
+    # If the server has no log channel, do nothing
     server = servers[message.server.id]
     if server.log_chan is None: return
 
     # Do not log messages that have been deleted from the log channel
-    channel = message.channel
     if message.channel.id == server.log_chan: return
 
     log_channel = client.get_channel(server.log_chan)
-    timestamp = message.timestamp.strftime('%y%m%d %H:%M')
-    report = '[{}] [{}] {}: {}'.format(timestamp, message.channel.name,
+    timestamp = util.ts(message.timestamp)
+    report = 'deleted: [{}] [{}] {}: {}'.format(
+            message.channel.name, timestamp,
             message.author.name, message.content)
+    await client.send_message(log_channel, report)
+
+@client.event
+async def on_message_edit(before, after):
+    '''Log edited messages if configured to do so for that server'''
+    if after.server is None: return
+    if after.author.id == client.user.id: return
+
+    # There are multiple cases that trigger this event, such
+    # as pinning / unpinning a message. We are only interested
+    # in messages whose contents have been edited.
+    if before.content == after.content: return
+
+    server = servers[after.server.id]
+    if server.log_chan is None: return
+
+    if after.channel.id == server.log_chan: return
+
+    log_channel = client.get_channel(server.log_chan)
+    timestamp_before = util.ts(before.timestamp)
+    timestamp_after = util.ts(after.timestamp)
+    report = 'edited: [{}] [{}] {}: {} -> [{}] {}'.format(
+            before.channel.name, timestamp_before,
+            before.author.name, before.content,
+            timestamp_after, after.content)
     await client.send_message(log_channel, report)
 
 async def write_notifs_task(client):

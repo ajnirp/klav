@@ -101,8 +101,8 @@ async def search(message, servers, client):
     async for entry in client.logs_from(message.channel, limit=5000):
         if skip: skip = False; continue # skip the first element
         if query in entry.content.lower():
-            timestamp = entry.timestamp.strftime('%y%m%d %H:%M')
-            report = '[{}] [{}] {}: {}'.format(timestamp, channel_name, entry.author.name, entry.content)
+            timestamp = util.ts(entry.timestamp)
+            report = '[{}] [{}] {}: {}'.format(channel_name, timestamp, entry.author.name, entry.content)
             await client.send_message(message.author, report)
 
 async def post_periodic_pic(server, client):
@@ -129,6 +129,9 @@ async def check_musicbot(music_voice_chan, music_text_chan, bot_id, client):
 
 def now():
     return time.strftime('[%y%m%d %H:%M]')
+
+def ts(datetime_obj):
+    return datetime_obj.strftime('%y%m%d %H:%M')
 
 def time_to_post():
     # post four times a day
