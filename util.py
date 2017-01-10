@@ -10,8 +10,13 @@ async def set_bias(message, servers, client):
     server = servers[message.server.id]
     content = message.content.strip().lower().split()
 
-    # Figure out which roles to add to the user
-    to_add_ids = [server.role_map[kw] for kw in server.role_map if kw in content]
+    # Figure out which roles to add to the user. Primary is the one mentioned first.
+    secondary = False
+    for kw in server.role_map:
+        if kw in content:
+            to_add_ids.append(server.role_map[kw][secondary])
+            secondary = True
+
     to_add_roles = [discord.utils.find(lambda r: r.id == r_id, message.server.roles) for r_id in to_add_ids]
 
     if len(to_add_ids) > 0:

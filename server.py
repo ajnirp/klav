@@ -25,11 +25,9 @@ class Server:
                 self.welcome_msg = None
             self.mod_roles = lines[6].split()
             self.role_map = {}
-            for keyword_list in lines[7].split(':'):
+            for role_config in lines[7].split(':'):
                 split = keyword_list.split(',')
-                role = split[-1]
-                for keyword in split[:-1]:
-                    self.role_map[keyword] = role
+                self.role_map[split[0]] = (split[1], split[2])
             self.command_map = {}
             for command_line in lines[8:]:
                 commands, response = command_line.split('\t')
