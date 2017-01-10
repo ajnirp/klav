@@ -70,10 +70,10 @@ async def on_message_delete(message):
     # If the server has no log channel, do nothing
     server = servers[message.server.id]
     if server.log_chan is None: return
+    if message.author.id in server.do_not_log: return
 
     # Do not log messages that have been deleted from the log channel
     if message.channel.id == server.log_chan: return
-    if message.channel.id in server.do_not_log: return
 
     log_channel = client.get_channel(server.log_chan)
     timestamp = util.ts(message.timestamp)
@@ -95,9 +95,9 @@ async def on_message_edit(before, after):
 
     server = servers[after.server.id]
     if server.log_chan is None: return
+    if after.author.id in server.do_not_log: return
 
     if after.channel.id == server.log_chan: return
-    if after.channel.id in server.do_not_log: return
 
     log_channel = client.get_channel(server.log_chan)
     timestamp_before = util.ts(before.timestamp)
