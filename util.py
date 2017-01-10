@@ -10,17 +10,21 @@ async def set_bias(message, servers, client):
     server = servers[message.server.id]
     content = message.content.strip().lower().split()
 
+    keywords = server.role_map.keys()
+
     # Figure out which roles to add to the user. Primary is the one mentioned first.
-    secondary = False
-    for kw in server.role_map:
-        if kw in content:
-            to_add_ids.append(server.role_map[kw][secondary])
+    to_add_ids, secondary = set([]), False
+    for word in content:
+        if word in keywords:
+            to_add_ids.add(server.role_map[word][secondary])
             secondary = True
 
     to_add_roles = [discord.utils.find(lambda r: r.id == r_id, message.server.roles) for r_id in to_add_ids]
 
     if len(to_add_ids) > 0:
-        new_roles_ids = [r.id for r in message.author.roles if r.id not in server.role_map.values()] + to_add_ids
+        assignable_roles = []
+        for pair in server.role_map.values(): assignable_roles.append(pair[0]); assignable_roles.append(pair[1])
+        new_roles_ids = [r.id for r in message.author.roles if r.id not in assignable_roles] + list(to_add_ids)
         new_roles = [discord.utils.find(lambda r: r.id == r_id, message.server.roles) for r_id in new_roles_ids]
         await client.replace_roles(message.author, *new_roles)
 
@@ -34,6 +38,10 @@ async def set_bias(message, servers, client):
         await asyncio.sleep(5)
         await client.delete_message(message)
         await client.delete_message(bot_message)
+    else:
+        # Irrelevant message, clean it up
+        await asyncio.sleep(5)
+        await client.delete_message(message)
 
 async def assign_default_role(member, servers, client):
     server = servers[member.server.id]

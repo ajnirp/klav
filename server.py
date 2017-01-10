@@ -26,7 +26,7 @@ class Server:
             self.mod_roles = lines[6].split()
             self.role_map = {}
             for role_config in lines[7].split(':'):
-                split = keyword_list.split(',')
+                split = role_config.split(',')
                 self.role_map[split[0]] = (split[1], split[2])
             self.command_map = {}
             for command_line in lines[8:]:
