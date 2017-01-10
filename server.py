@@ -11,9 +11,14 @@ class Server:
             self.welcome_chan = lines[0]
             self.main_chan = lines[1]
             self.bias_chan = lines[2]
-            self.log_chan = lines[3]
-            if self.log_chan is '':
+            log_config = lines[3]
+            if log_config is '':
                 self.log_chan = None
+                self.do_not_log = []
+            else:
+                log_config = log_config.split()
+                self.log_chan = log_config[0]
+                self.do_not_log = log_config[1:]
             self.default_role = lines[4]
             self.welcome_msg = lines[5]
             if self.welcome_msg is '':
