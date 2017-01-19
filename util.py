@@ -150,3 +150,8 @@ def time_to_post():
     # post four times a day
     now = datetime.datetime.now()
     return now.hour % 4 == 2 and now.minute == 0
+
+def pin_event(before, after):
+    if not before.pinned and after.pinned: return -1
+    if before.pinned and not after.pinned: return 1
+    return 0

@@ -67,6 +67,9 @@ async def on_message_delete(message):
     if message.server is None: return
     if message.author.id == client.user.id: return
 
+    # If the message is a system 'pin added' message, ignore it
+    if message.type == discord.MessageType.pins_add: return
+
     # If the server has no log channel, do nothing
     server = servers[message.server.id]
     if server.log_chan is None: return
@@ -88,11 +91,6 @@ async def on_message_edit(before, after):
     if after.server is None: return
     if after.author.id == client.user.id: return
 
-    # There are multiple cases that trigger this event, such
-    # as pinning / unpinning a message. We are only interested
-    # in messages whose contents have been edited.
-    if before.content == after.content: return
-
     server = servers[after.server.id]
     if server.log_chan is None: return
     if after.author.id in server.do_not_log: return
@@ -100,8 +98,31 @@ async def on_message_edit(before, after):
     if after.channel.id == server.log_chan: return
 
     log_channel = client.get_channel(server.log_chan)
+
     timestamp_before = util.ts(before.timestamp)
     timestamp_after = util.ts(after.timestamp)
+
+    # There are multiple cases that trigger this event.
+    # We are only interested in messages whose contents
+    # have been edited, and messages that have been
+    # pinned or unpinned.
+
+    # Message has been pinned or unpinned.
+    pin_event = util.pin_event(before, after)
+    if pin_event:
+        action = ['pinned', 'unpinned'][(pin_event+1)>>1]
+        report = '{}: [{}] [{}] {}: {}'.format(
+            action, before.channel.name, timestamp_before,
+            before.author.name, before.content)
+        await client.send_message(log_channel, report)
+        return
+
+    # The message has neither been pinned nor unpinned, and
+    # the content is the same, meaning it has received an embed.
+    # We don't care about this situation.
+    if before.content == after.content: return
+
+    # The message has had its contents edited.
     report = 'edited: [{}] [{}] {}: {} -> [{}] {}'.format(
             before.channel.name, timestamp_before,
             before.author.name, before.content,
