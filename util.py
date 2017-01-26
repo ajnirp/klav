@@ -45,6 +45,7 @@ async def set_bias(message, servers, client):
 
 async def assign_default_role(member, servers, client):
     server = servers[member.server.id]
+    if server.default_role is None: return
     default_role = discord.utils.find(lambda r: r.id == server.default_role, member.server.roles)
     await client.add_roles(member, default_role)
 
