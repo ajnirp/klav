@@ -20,6 +20,8 @@ class Server:
                 self.log_chan = log_config[0]
                 self.do_not_log = log_config[1:]
             self.default_role = lines[4]
+            if self.default_role is '':
+                self.default_role = None
             self.welcome_msg = lines[5]
             if self.welcome_msg is '':
                 self.welcome_msg = None
