@@ -99,7 +99,20 @@ async def command(message, servers, client):
 async def help(message, servers, client):
     if message.content not in ['.h', '!h']: return
     server = servers[message.server.id]
-    help_str = 'Commands: '  + ', '.join(sorted(server.command_map.keys()))
+
+    help_str = 'Commands:\n'
+    sorted_keys = sorted(server.command_map.keys())
+
+    for key in sorted_keys:
+        value = server.command_map[key]
+        line = key + ' <' + value + '>' if value.startswith('http') else key + ' ' + value
+        if len(help_str) + len(line) >= 2000: # Discord message limit
+            await client.send_message(message.author, help_str)
+            help_str = ''
+        help_str += line + '\n'
+
+    # Send the remainder (or, in case the total message never crossed 2000
+    # chars, the entire thing) of the help string.
     await client.send_message(message.author, help_str)
 
 async def search(message, servers, client):
