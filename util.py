@@ -128,7 +128,7 @@ async def search(message, servers, client):
     async for entry in client.logs_from(message.channel, limit=5000):
         if skip: skip = False; continue # skip the first element
         if query in entry.content.lower():
-            timestamp = util.ts(entry.timestamp)
+            timestamp = ts(entry.timestamp)
             report = '[{}] [{}] {}: {}'.format(channel_name, timestamp, entry.author.name, entry.content)
             await client.send_message(message.author, report)
 
