@@ -115,23 +115,6 @@ async def help(message, servers, client):
     # chars, the entire thing) of the help string.
     await client.send_message(message.author, help_str)
 
-async def search(message, servers, client):
-    if message.content[0] not in '.!': return
-    prefix = 's '
-    if not message.content[1:].startswith(prefix): return
-    query = message.content[1+len(prefix):].lower()
-    if 'luber' in query:
-        await client.send_message(message.author, 'Did you mean: *lunber*?')
-        return
-    skip = True
-    channel_name = message.channel.name
-    async for entry in client.logs_from(message.channel, limit=5000):
-        if skip: skip = False; continue # skip the first element
-        if query in entry.content.lower():
-            timestamp = ts(entry.timestamp)
-            report = '[{}] [{}] {}: {}'.format(channel_name, timestamp, entry.author.name, entry.content)
-            await client.send_message(message.author, report)
-
 async def post_periodic_pic(server, client):
     if len(server.daily_pics) > 0:
         url_fragment = random.choice(server.daily_pics)
