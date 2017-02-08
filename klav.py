@@ -27,6 +27,8 @@ async def on_member_join(member):
 
 @client.event
 async def on_member_remove(member):
+    if member.server.id == '202834966621585408':
+        return
     server = servers[member.server.id]
     main_chan = client.get_channel(server.main_chan)
     notification = '**{0.name}** has left the server'
