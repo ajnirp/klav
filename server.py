@@ -8,9 +8,11 @@ class Server:
     def read_config(self, config_file_path):
         with open(config_file_path, 'r') as f:
             lines = [l.strip() for l in f.readlines()]
+
             self.welcome_chan = lines[0]
             self.main_chan = lines[1]
             self.bias_chan = lines[2]
+
             log_config = lines[3]
             if log_config is '':
                 self.log_chan = None
@@ -19,19 +21,26 @@ class Server:
                 log_config = log_config.split()
                 self.log_chan = log_config[0]
                 self.do_not_log = log_config[1:]
+
             self.default_role = lines[4]
             if self.default_role is '':
                 self.default_role = None
+
             self.welcome_msg = lines[5]
             if self.welcome_msg is '':
                 self.welcome_msg = None
+
             self.mod_roles = lines[6].split()
+
+            self.user_info_allowed = lines[7].split()
+
             self.role_map = {}
-            for role_config in lines[7].split(':'):
+            for role_config in lines[8].split(':'):
                 split = role_config.split(',')
                 self.role_map[split[0]] = (split[1], split[2])
+
             self.command_map = {}
-            for command_line in lines[8:]:
+            for command_line in lines[9:]:
                 commands, response = command_line.split('\t')
                 for command in commands.split(','):
                     self.command_map[command] = response

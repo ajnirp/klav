@@ -152,3 +152,36 @@ def pin_event(before, after):
     if not before.pinned and after.pinned: return -1
     if before.pinned and not after.pinned: return 1
     return 0
+
+async def user_info(message, servers, client):
+    if message.content[0] not in '.!': return
+    if message.content[1:3] != 'u ': return
+
+    server = servers[message.server.id]
+    if message.channel.id not in server.user_info_allowed: return
+
+    for member in message.mentions:
+        await display_user_info(member, message, servers, client)
+
+async def display_user_info(member, message, servers, client):
+    account_created = discord.utils.snowflake_time(member.id)
+    role_names = ', '.join(r.name for r in member.roles[1:])
+
+    embed = discord.Embed(
+        title='User info',
+        type='rich',
+        description=member.name,
+        url=discord.Embed.Empty,
+        timestamp=discord.Embed.Empty,
+        footer=discord.Embed.Empty,
+        colour=member.top_role.colour)
+
+    embed.set_thumbnail(url=member.avatar_url) \
+         .add_field(name='Account created', value=ts(account_created)) \
+         .add_field(name='Joined server', value=ts(member.joined_at)) \
+         .add_field(name='User ID', value=member.id) \
+         .add_field(name='Nickname', value=member.nick) \
+         .add_field(name='Status', value=member.status) \
+         .add_field(name='Roles', value=role_names)
+
+    await client.send_message(message.channel, content=None, tts=False, embed=embed)

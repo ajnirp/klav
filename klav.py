@@ -58,6 +58,7 @@ async def on_message(message):
     # @everyone
     await util.command(message, servers, client)
     await util.help(message, servers, client)
+    await util.user_info(message, servers, client)
     # await notifs.add_notif(message, servers, client)
     # await notifs.remove_notif(message, servers, client)
     # await notifs.view_notifs(message, servers, client)
