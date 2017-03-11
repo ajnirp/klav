@@ -1,9 +1,10 @@
 class Server:
-    def __init__(self, s_id, config_file_path, notifs_file_path, daily_file_path):
+    def __init__(self, s_id, config_file_path, notifs_file_path, daily_file_path, member_pics_file_path):
             self.id = s_id
             self.read_config(config_file_path)
             self.read_notifs(notifs_file_path)
             self.read_daily(daily_file_path)
+            self.read_member_pics(member_pics_file_path)
 
     def read_config(self, config_file_path):
         with open(config_file_path, 'r') as f:
@@ -59,3 +60,10 @@ class Server:
     def read_daily(self, daily_file_path):
         with open(daily_file_path, 'r') as f:
             self.daily_pics = f.read().strip().split()
+
+    def read_member_pics(self, member_pics_file_path):
+        self.member_pics = {}
+        with open(member_pics_file_path, 'r') as f:
+            for line in f.readlines():
+                member_name, *pics = line.split()
+                self.member_pics[member_name] = pics

@@ -56,12 +56,15 @@ def read_configs(servers):
     notifs_files = os.listdir(notifs_dir)
     daily_dir = os.path.join('.', 'daily')
     daily_files = os.listdir(daily_dir)
-    for config_file, notifs_file, daily_file in zip(config_files, notifs_files, daily_files):
+    member_pics_dir = os.path.join('.', 'member')
+    member_files = os.listdir(member_pics_dir)
+    for config_file, notifs_file, daily_file, member_pics_file in zip(config_files, notifs_files, daily_files, member_files):
         config_file_path = os.path.join(config_dir, config_file)
         notifs_file_path = os.path.join(notifs_dir, notifs_file)
         daily_file_path = os.path.join(daily_dir, daily_file)
+        member_pics_file_path = os.path.join(member_pics_dir, member_pics_file)
         s_id = config_file
-        servers[s_id] = server.Server(config_file, config_file_path, notifs_file_path, daily_file_path)
+        servers[s_id] = server.Server(config_file, config_file_path, notifs_file_path, daily_file_path, member_pics_file_path)
 
 def is_mod(user, s_id, servers):
     server = servers[s_id]
@@ -114,6 +117,16 @@ async def help(message, servers, client):
     # Send the remainder (or, in case the total message never crossed 2000
     # chars, the entire thing) of the help string.
     await client.send_message(message.author, help_str)
+
+async def handle_member_pic_request(message, servers, client):
+    if message.content[0] not in '.!': return
+    if len(message.content.split()) > 1: return
+    server = servers[message.server.id]
+    member_name = message.content[1:]
+    if member_name in server.member_pics:
+        url_fragment = random.choice(server.member_pics[member_name])
+        url = 'https://i.imgur.com/{}.jpg'.format(url_fragment)
+        await client.send_message(message.channel, url)
 
 async def post_periodic_pic(server, client):
     if len(server.daily_pics) > 0:
