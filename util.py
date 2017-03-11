@@ -161,11 +161,16 @@ async def user_info(message, servers, client):
     if message.channel.id not in server.user_info_allowed: return
 
     for member in message.mentions:
-        await display_user_info(member, message, servers, client)
+        await display_user_info(member, message.channel, client)
 
-async def display_user_info(member, message, servers, client):
+async def display_user_info(member, channel, client):
+    '''Send a message to channel 'channel' containing an Embed object
+    that has information about the server member 'member'.'''
     account_created = discord.utils.snowflake_time(member.id)
-    role_names = ', '.join(r.name for r in member.roles[1:])
+
+    role_names = 'None'
+    if len(member.roles) > 1:
+        role_names = ', '.join(r.name for r in member.roles[1:])
 
     embed = discord.Embed(
         title='User info',
@@ -177,11 +182,11 @@ async def display_user_info(member, message, servers, client):
         colour=member.top_role.colour)
 
     embed.set_thumbnail(url=member.avatar_url) \
-         .add_field(name='Account created', value=ts(account_created)) \
-         .add_field(name='Joined server', value=ts(member.joined_at)) \
-         .add_field(name='User ID', value=member.id) \
+         .add_field(name='Account made', value=ts(account_created)) \
+         .add_field(name='Here since', value=ts(member.joined_at)) \
+         .add_field(name='ID', value=member.id) \
          .add_field(name='Nickname', value=member.nick) \
          .add_field(name='Status', value=member.status) \
          .add_field(name='Roles', value=role_names)
 
-    await client.send_message(message.channel, content=None, tts=False, embed=embed)
+    await client.send_message(channel, content=None, tts=False, embed=embed)

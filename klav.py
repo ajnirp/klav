@@ -23,12 +23,19 @@ async def on_member_join(member):
         greeting = '{0.mention} {1} Please read {2.mention}, and pick bias roles in {3.mention}.'
         greeting = greeting.format(member, server.welcome_msg, welcome_chan, bias_chan)
         await client.send_message(main_chan, greeting)
+
     await util.assign_default_role(member, servers, client)
+
+    # display member info in the log channel, if there is one
+    if server.log_chan is not None:
+        log_chan = client.get_channel(server.log_chan)
+        report = 'joined: {} {}'.format(member.id, member.name)
+        await client.send_message(log_chan, report)
+        await util.display_user_info(member, log_chan, client)
 
 @client.event
 async def on_member_remove(member):
-    if member.server.id == '202834966621585408':
-        return
+    if member.server.id == '202834966621585408': return
     server = servers[member.server.id]
     main_chan = client.get_channel(server.main_chan)
     notification = '**{0.name}** has left the server'
