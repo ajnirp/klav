@@ -63,7 +63,12 @@ class Server:
 
     def read_member_pics(self, member_pics_file_path):
         self.member_pics = {}
+        self.member_nicknames = {}
         with open(member_pics_file_path, 'r') as f:
             for line in f.readlines():
-                member_name, *pics = line.split()
-                self.member_pics[member_name] = pics
+                member_config, *pics = line.split()
+                name, *nicknames = member_config.split(',')
+                self.member_pics[name] = pics
+                self.member_nicknames[name] = name
+                for nickname in nicknames:
+                    self.member_nicknames[nickname] = name
