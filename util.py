@@ -129,6 +129,15 @@ async def handle_member_pic_request(message, servers, client):
         url = 'https://i.imgur.com/{}.jpg'.format(url_fragment)
         await client.send_message(message.channel, url)
 
+async def handle_avatar_request(message, client):
+    '''Post the avatar of a user'''
+    if message.content[:3] not in ['.a ', '!a ']: return
+    for member in message.mentions:
+        report = 'User has no avatar'
+        if member.avatar_url != '':
+            report = '{}\'s avatar: {}'.format(member.name, member.avatar_url)
+        await client.send_message(message.channel, report)
+
 async def post_periodic_pic(server, client):
     if len(server.daily_pics) > 0:
         url_fragment = random.choice(server.daily_pics)
@@ -168,8 +177,7 @@ def pin_event(before, after):
     return 0
 
 async def user_info(message, servers, client):
-    if message.content[0] not in '.!': return
-    if message.content[1:3] != 'u ': return
+    if message.content[:3] not in ['.u ', '!u ']: return
 
     server = servers[message.server.id]
     if message.channel.id not in server.user_info_allowed: return

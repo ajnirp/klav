@@ -63,6 +63,7 @@ async def on_message(message):
     await util.kick_members(message, servers, client)
 
     # @everyone
+    await util.handle_avatar_request(message, client)
     await util.handle_member_pic_request(message, servers, client)
     await util.command(message, servers, client)
     await util.help(message, servers, client)
