@@ -176,11 +176,8 @@ def pin_event(before, after):
     if before.pinned and not after.pinned: return 1
     return 0
 
-async def user_info(message, servers, client):
+async def user_info(message, _, client):
     if message.content[:3] not in ['.u ', '!u ']: return
-
-    server = servers[message.server.id]
-    if message.channel.id not in server.user_info_allowed: return
 
     for member in message.mentions:
         await display_user_info(member, message.channel, client)
