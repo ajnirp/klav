@@ -10,14 +10,14 @@ import time
 
 async def set_bias(message, servers, client):
     server = servers[message.server.id]
-    content = message.content.strip().lower().split()
+    content = message.content.strip().lower()
 
     keywords = server.role_map.keys()
 
     # Figure out which roles to add to the user. Primary is the one mentioned first.
     to_add_ids, secondary = set([]), False
-    for word in content:
-        if word in keywords:
+    for word in keywords:
+        if word in content:
             to_add_ids.add(server.role_map[word][secondary])
             secondary = True
 
