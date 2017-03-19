@@ -20,8 +20,15 @@ async def on_member_join(member):
         main_chan = client.get_channel(server.main_chan)
         welcome_chan = client.get_channel(server.welcome_chan)
         bias_chan = client.get_channel(server.bias_chan)
-        greeting = '{0.mention} {1} Please read {2.mention}, and pick bias roles in {3.mention}.'
-        greeting = greeting.format(member, server.welcome_msg, welcome_chan, bias_chan)
+        greeting = '{0.mention} {1}. You are the {2}{3} member to join! Please read {4.mention}, and pick bias roles in {5.mention}.'
+
+        count = member.server.member_count
+        suffix = 'th'
+        if count % 10 == 1: suffix = 'st'
+        elif count % 10 == 2: suffix = 'nd'
+        elif count % 10 == 3: suffix = 'rd'
+
+        greeting = greeting.format(member, server.welcome_msg, count, suffix, welcome_chan, bias_chan)
         await client.send_message(main_chan, greeting)
 
     await util.assign_default_role(member, servers, client)
