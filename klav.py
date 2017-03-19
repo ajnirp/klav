@@ -68,6 +68,7 @@ async def on_message(message):
     await util.command(message, servers, client)
     await util.help(message, servers, client)
     await util.user_info(message, servers, client)
+    await util.handle_gsd_countdown_request(message, servers, client)
     # await notifs.add_notif(message, servers, client)
     # await notifs.remove_notif(message, servers, client)
     # await notifs.view_notifs(message, servers, client)
@@ -160,13 +161,6 @@ async def check_musicbot_task(client):
     while not client.is_closed:
         await util.check_musicbot('202834966621585409', '203320553430450177', '197743740411052032', client)
         await asyncio.sleep(60)
-
-# async def rss_reader_task(client):
-#     await client.wait_until_ready()
-#     while not client.is_closed():
-#         for server in servers.values():
-#             server.rss.update_all()
-#         await asyncio.sleep(300)
 
 if __name__ == '__main__':
     util.read_configs(servers)

@@ -2,8 +2,10 @@ import asyncio
 import datetime
 import discord
 import os
+import pytz
 import random
 import server
+import sys
 import time
 
 async def set_bias(message, servers, client):
@@ -77,7 +79,8 @@ async def delete_messages(message, servers, client):
     try:
         num_messages = 1 + int(num_messages)
         await client.purge_from(message.channel, limit=num_messages)
-    except:
+    except Exception as e:
+        print('delete_messages: {}'.format(e), file=sys.stderr)
         return
 
 async def kick_members(message, servers, client):
@@ -209,3 +212,29 @@ async def display_user_info(member, channel, client):
          .add_field(name='Roles', value=role_names)
 
     await client.send_message(channel, content=None, tts=False, embed=embed)
+
+async def handle_gsd_countdown_request(message, servers, client):
+    if message.server.id != '170293223577747457': return
+    if message.content not in ['.countdown', '!countdown']: return
+
+    await post_gsd_countdown(message, servers, client)
+
+async def post_gsd_countdown(message, _, client):
+    target_time_string = '27 March 2017 12:00:00 PM +0900'
+    target_time = datetime.datetime.strptime(target_time_string, '%d %B %Y %H:%M:%S %p %z')
+    td = target_time - datetime.datetime.now(pytz.utc)
+
+    seconds = td.seconds
+    hours = seconds // 3600
+    hours_overflow = seconds - (hours * 3600)
+    minutes = hours_overflow // 60
+    seconds = hours_overflow - (minutes * 60)
+
+    days_string = '{} day'.format(td.days) + ['', 's'][td.days != 1]
+    hours_string = '{} hour'.format(hours) + ['', 's'][hours != 1]
+    minutes_string = '{} minute'.format(minutes) + ['', 's'][minutes != 1]
+    seconds_string = '{} second'.format(seconds) + ['', 's'][seconds != 1]
+
+    report = '{} {} {} {} to go!'.format(days_string, hours_string, minutes_string, seconds_string)
+
+    await client.send_message(message.channel, report)
