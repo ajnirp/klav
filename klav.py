@@ -20,7 +20,7 @@ async def on_member_join(member):
         main_chan = client.get_channel(server.main_chan)
         welcome_chan = client.get_channel(server.welcome_chan)
         bias_chan = client.get_channel(server.bias_chan)
-        greeting = '{0.mention} {1}. You are the {2}{3} member to join! Please read {4.mention}, and pick bias roles in {5.mention}.'
+        greeting = '{0.mention} {1} You are the **{2}{3}** member to join! Please read {4.mention}, and pick bias roles in {5.mention}.'
 
         count = member.server.member_count
         suffix = 'th'
