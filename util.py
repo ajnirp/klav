@@ -10,16 +10,17 @@ import time
 
 async def set_bias(message, servers, client):
     server = servers[message.server.id]
-    content = message.content.strip().lower()
+    content = message.content.strip().lower().split()
 
     keywords = server.role_map.keys()
 
     # Figure out which roles to add to the user. Primary is the one mentioned first.
     to_add_ids, secondary = set([]), False
-    for word in keywords:
-        if word in content:
-            to_add_ids.add(server.role_map[word][secondary])
-            secondary = True
+    for word in content:
+        for keyword in keywords:
+            if keyword in word:
+                to_add_ids.add(server.role_map[keyword][secondary])
+                secondary = True
 
     to_add_roles = [discord.utils.find(lambda r: r.id == r_id, message.server.roles) for r_id in to_add_ids]
 
