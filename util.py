@@ -239,3 +239,16 @@ async def post_gsd_countdown(message, _, client):
     report = '{} {} {} {} to go!'.format(days_string, hours_string, minutes_string, seconds_string)
 
     await client.send_message(message.channel, report)
+
+async def handle_list_mods_request(message, servers, client):
+    if message.content not in ['.m', '!m']: return
+    server = servers[message.server.id]
+    mods = []
+    mod_ids = set()
+    for member in message.server.members:
+        for role in member.roles:
+            if role.id in server.mod_roles and member.id not in mod_ids:
+                mod_ids.add(member.id)
+                mods.append(member)
+    report = 'Mods: {}'.format(', '.join(mod.name for mod in mods))
+    await client.send_message(message.channel, report)

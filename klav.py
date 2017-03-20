@@ -76,6 +76,7 @@ async def on_message(message):
     await util.help(message, servers, client)
     await util.user_info(message, servers, client)
     await util.handle_gsd_countdown_request(message, servers, client)
+    await util.handle_list_mods_request(message, servers, client)
     # await notifs.add_notif(message, servers, client)
     # await notifs.remove_notif(message, servers, client)
     # await notifs.view_notifs(message, servers, client)
