@@ -24,9 +24,9 @@ async def on_member_join(member):
 
         count = member.server.member_count
         suffix = 'th'
-        if count % 10 == 1: suffix = 'st'
-        elif count % 10 == 2: suffix = 'nd'
-        elif count % 10 == 3: suffix = 'rd'
+        if count % 10 == 1 and (count // 10) % 10 != 1: suffix = 'st'
+        elif count % 10 == 2 and (count // 10) % 10 != 1: suffix = 'nd'
+        elif count % 10 == 3 and (count // 10) % 10 != 1: suffix = 'rd'
 
         greeting = greeting.format(member, server.welcome_msg, count, suffix, welcome_chan, bias_chan)
         await client.send_message(main_chan, greeting)
