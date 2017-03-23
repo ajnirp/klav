@@ -258,7 +258,7 @@ async def gallery_update(message, servers, client):
     server = servers[message.server.id]
 
     if server.gallery_chan is None: return
-    if message.server.id in [server.welcome_chan, server.log_chan, server.bias_chan]: return
+    if message.server.id in [server.gallery_chan, server.welcome_chan, server.log_chan, server.bias_chan]: return
 
     found_urls = ' '.join(word for word in message.content.split() if validators.url(word))
 
