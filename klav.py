@@ -59,6 +59,8 @@ async def on_message(message):
     if message.channel.id == server.bias_chan:
         await util.set_bias(message, servers, client)
 
+    await util.gallery_update(message, servers, client)
+
     # await notifs.check_notifs(message, servers, client)
 
     await util.dialogue(message, servers, client)
@@ -74,7 +76,7 @@ async def on_message(message):
     await util.handle_member_pic_request(message, servers, client)
     await util.command(message, servers, client)
     await util.help(message, servers, client)
-    await util.user_info(message, servers, client)
+    await util.handle_user_info_request(message, servers, client)
     await util.handle_gsd_countdown_request(message, servers, client)
     await util.handle_list_mods_request(message, servers, client)
     # await notifs.add_notif(message, servers, client)

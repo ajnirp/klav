@@ -7,6 +7,7 @@ import random
 import server
 import sys
 import time
+import validators
 
 async def set_bias(message, servers, client):
     server = servers[message.server.id]
@@ -180,7 +181,7 @@ def pin_event(before, after):
     if before.pinned and not after.pinned: return 1
     return 0
 
-async def user_info(message, _, client):
+async def handle_user_info_request(message, _, client):
     if message.content[:3] not in ['.u ', '!u ']: return
 
     for member in message.mentions:
@@ -252,3 +253,15 @@ async def handle_list_mods_request(message, servers, client):
                 mods.append(member)
     report = 'Mods: {}'.format(', '.join(mod.name for mod in mods))
     await client.send_message(message.channel, report)
+
+async def gallery_update(message, servers, client):
+    server = servers[message.server.id]
+
+    if server.gallery_chan is None: return
+    if message.server.id in [server.welcome_chan, server.log_chan, server.bias_chan]: return
+
+    found_urls = ' '.join(word for word in message.split() if validators.url.url(word))
+    report = '**{0}** in {1.mention}: {}'.format(message.author.name, message.channel, found_urls)
+    gallery_chan = client.get_channel(server.gallery_chan)
+
+    await client.send_message(gallery_chan, report)

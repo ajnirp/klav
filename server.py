@@ -33,7 +33,14 @@ class Server:
 
             self.mod_roles = lines[6].split()
 
-            self.user_info_allowed = lines[7].split()
+            self.gallery_chan_config = lines[7]
+            if gallery_chan_config is '':
+                self.gallery_chan = None
+                self.do_not_copy_to_gallery = []
+            else:
+                gallery_chan_config = self.gallery_chan_config.split()
+                self.gallery_chan = gallery_chan_config[0]
+                self.do_not_copy_to_gallery = gallery_chan_config[1:]
 
             self.role_map = {}
             for role_config in lines[8].split(':'):
