@@ -52,14 +52,15 @@ async def on_member_remove(member):
 @client.event
 async def on_message(message):
     if message.server is None: return
+
+    await util.gallery_update(message, servers, client)
+
     if message.author.id == client.user.id: return
     if len(message.content) == 0: return
 
     server = servers[message.server.id]
     if message.channel.id == server.bias_chan:
         await util.set_bias(message, servers, client)
-
-    await util.gallery_update(message, servers, client)
 
     # await notifs.check_notifs(message, servers, client)
 
