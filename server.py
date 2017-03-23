@@ -34,7 +34,7 @@ class Server:
             self.mod_roles = lines[6].split()
 
             self.gallery_chan_config = lines[7]
-            if gallery_chan_config is '':
+            if self.gallery_chan_config is '':
                 self.gallery_chan = None
                 self.do_not_copy_to_gallery = []
             else:

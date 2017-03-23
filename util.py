@@ -260,8 +260,10 @@ async def gallery_update(message, servers, client):
     if server.gallery_chan is None: return
     if message.server.id in [server.welcome_chan, server.log_chan, server.bias_chan]: return
 
-    found_urls = ' '.join(word for word in message.split() if validators.url.url(word))
-    report = '**{0}** in {1.mention}: {}'.format(message.author.name, message.channel, found_urls)
-    gallery_chan = client.get_channel(server.gallery_chan)
+    found_urls = ' '.join(word for word in message.content.split() if validators.url(word))
 
-    await client.send_message(gallery_chan, report)
+    if len(found_urls) > 0:
+        report = '**{0}** in {1.mention}: {2}'.format(message.author.name, message.channel, found_urls)
+        gallery_chan = client.get_channel(server.gallery_chan)
+
+        await client.send_message(gallery_chan, report)
