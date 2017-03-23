@@ -262,6 +262,7 @@ async def gallery_update(message, servers, client):
     if message.channel.id in server.do_not_copy_to_gallery: return
 
     found_urls = ' '.join(word for word in message.content.split() if validators.url(word))
+    found_urls += ' '.join(attachment['url'] for attachment in message.attachments)
 
     if len(found_urls) > 0:
         report = '**{0}** in {1.mention}: {2}'.format(message.author.name, message.channel, found_urls)
