@@ -22,6 +22,9 @@ async def on_member_join(member):
         bias_chan = client.get_channel(server.bias_chan)
         greeting = '{0.mention} {1} You are the **{2}{3}** member to join! Please read {4.mention}, and pick bias roles in {5.mention}.'
 
+        if member.server.id == '170293223577747457':
+            greeting += ' https://gfycat.com/MeekWhoppingArabianoryx'
+
         count = member.server.member_count
         suffix = 'th'
         if count % 10 == 1 and (count // 10) % 10 != 1: suffix = 'st'
