@@ -221,25 +221,25 @@ async def handle_gsd_countdown_request(message, servers, client):
 
     await post_gsd_countdown(message, servers, client)
 
-async def post_gsd_countdown(message, _, client):
-    target_time_string = '27 March 2017 12:00:00 PM +0900'
-    target_time = datetime.datetime.strptime(target_time_string, '%d %B %Y %H:%M:%S %p %z')
-    td = target_time - datetime.datetime.now(pytz.utc)
+# async def post_gsd_countdown(message, _, client):
+#     target_time_string = '27 March 2017 12:00:00 PM +0900'
+#     target_time = datetime.datetime.strptime(target_time_string, '%d %B %Y %H:%M:%S %p %z')
+#     td = target_time - datetime.datetime.now(pytz.utc)
 
-    seconds = td.seconds
-    hours = seconds // 3600
-    hours_overflow = seconds - (hours * 3600)
-    minutes = hours_overflow // 60
-    seconds = hours_overflow - (minutes * 60)
+#     seconds = td.seconds
+#     hours = seconds // 3600
+#     hours_overflow = seconds - (hours * 3600)
+#     minutes = hours_overflow // 60
+#     seconds = hours_overflow - (minutes * 60)
 
-    days_string = '{} day'.format(td.days) + ['', 's'][td.days != 1]
-    hours_string = '{} hour'.format(hours) + ['', 's'][hours != 1]
-    minutes_string = '{} minute'.format(minutes) + ['', 's'][minutes != 1]
-    seconds_string = '{} second'.format(seconds) + ['', 's'][seconds != 1]
+#     days_string = '{} day'.format(td.days) + ['', 's'][td.days != 1]
+#     hours_string = '{} hour'.format(hours) + ['', 's'][hours != 1]
+#     minutes_string = '{} minute'.format(minutes) + ['', 's'][minutes != 1]
+#     seconds_string = '{} second'.format(seconds) + ['', 's'][seconds != 1]
 
-    report = '{} {} {} {} to go!'.format(days_string, hours_string, minutes_string, seconds_string)
+#     report = '{} {} {} {} to go!'.format(days_string, hours_string, minutes_string, seconds_string)
 
-    await client.send_message(message.channel, report)
+#     await client.send_message(message.channel, report)
 
 async def handle_list_mods_request(message, servers, client):
     if message.content not in ['.m', '!m']: return
