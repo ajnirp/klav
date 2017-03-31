@@ -55,6 +55,7 @@ async def on_member_remove(member):
 @client.event
 async def on_message(message):
     if message.server is None: return
+    if message.server.id == '277998528960266250': return
 
     await util.gallery_update(message, servers, client)
 
