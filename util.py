@@ -308,33 +308,15 @@ async def handle_remove_command_request(message, servers, client, id_to_fragment
     output_ = server.command_map[input_]
     del server.command_map[input_]
 
-    headers = { 'Content-Type': 'application/json; charset=utf-8', 'Data-Type': 'json', }
-    role_map = { name: [id1, id2] for (name, (id1, id2)) in server.role_map.items() }
-    config = {
-        'channels': [server.welcome_chan, server.main_chan, server.bias_chan],
-        'log_chan': server.log_chan,
-        'do_not_log': server.do_not_log,
-        'default_role': server.default_role,
-        'welcome_msg': server.welcome_msg,
-        'mod_roles': server.mod_roles,
-        'gallery_chan': server.gallery_chan,
-        'do_not_copy_to_gallery': server.do_not_copy_to_gallery,
-        'role_map': role_map,
-        'command_map': server.command_map,
-        'member_nicknames': server.member_nicknames,
-        'member_pics': server.member_pics,
-        'periodic_pics': server.periodic_pics,
-    }
+    r = make_put_request_update_config(message, server, id_to_fragment_map)
+    if r is None:
+        await client.send_message(message.channel, ':skull_crossbones: Error updating config')
+        return
 
-    api_root = 'https://api.myjson.com/bins/'
-    for s_id, url_fragment in id_to_fragment_map:
-        if s_id == message.server.id:
-            url = api_root + url_fragment
-            r = requests.put(url, data=json.dumps(config), headers=headers)
-            report = ':white_check_mark: Removed command **{}** (response was: {})'.format(input_, output_)
-            if r.status_code != requests.codes.ok:
-                report = ':no_entry: Failed to remove command: **{}**. Error code: **{}**'.format(input_, r.status_code)
-            await client.send_message(message.channel, report)
+    report = ':white_check_mark: Removed command **{}** (response was: {})'.format(input_, output_)
+    if r.status_code != requests.codes.ok:
+        report = ':no_entry: Failed to remove command: **{}**. Error code: **{}**'.format(input_, r.status_code)
+    await client.send_message(message.channel, report)
 
 async def handle_add_command_request(message, servers, client, id_to_fragment_map):
     if message.content[0] != ',': return
@@ -352,6 +334,17 @@ async def handle_add_command_request(message, servers, client, id_to_fragment_ma
 
     server.command_map[input_] = output_
 
+    r = make_put_request_update_config(message, server, id_to_fragment_map)
+    if r is None:
+        await client.send_message(message.channel, ':skull_crossbones: Error updating config')
+        return
+    
+    report = ':white_check_mark: Added command **{}** with response {}'.format(input_, output_)
+    if r.status_code != requests.codes.ok:
+        report = ':no_entry: Failed to add command: **{}**. Error code: **{}**'.format(input_, r.status_code)
+    await client.send_message(message.channel, report)
+
+def make_put_request_update_config(message, server, id_to_fragment_map):
     headers = { 'Content-Type': 'application/json; charset=utf-8', 'Data-Type': 'json', }
     role_map = { name: [id1, id2] for (name, (id1, id2)) in server.role_map.items() }
     config = {
@@ -375,7 +368,6 @@ async def handle_add_command_request(message, servers, client, id_to_fragment_ma
         if s_id == message.server.id:
             url = api_root + url_fragment
             r = requests.put(url, data=json.dumps(config), headers=headers)
-            report = ':white_check_mark: Added command **{}** with response {}'.format(input_, output_)
-            if r.status_code != requests.codes.ok:
-                report = ':no_entry: Failed to add command: **{}**. Error code: **{}**'.format(input_, r.status_code)
-            await client.send_message(message.channel, report)
+            return r
+
+    return None
