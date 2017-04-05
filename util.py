@@ -332,6 +332,10 @@ async def handle_add_command_request(message, servers, client, id_to_fragment_ma
     output_ = ' '.join(split[2:])
     server = servers[message.server.id]
 
+    if input_ in server.command_map:
+        report = ':bangbang: The command **{}** already exists. Please remove it before adding a new one.'.format(input_)
+        await client.send_message(message.channel, report)
+        return
     server.command_map[input_] = output_
 
     r = make_put_request_update_config(message, server, id_to_fragment_map)
