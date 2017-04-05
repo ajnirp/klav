@@ -1,6 +1,8 @@
+import aiohttp
 import asyncio
 import datetime
 import discord
+import json
 import os
 import pytz
 import random
@@ -53,22 +55,21 @@ async def assign_default_role(member, servers, client):
     default_role = discord.utils.find(lambda r: r.id == server.default_role, member.server.roles)
     await client.add_roles(member, default_role)
 
-def read_configs(servers):
-    config_dir = os.path.join('.', 'config')
-    config_files = os.listdir(config_dir)
-    notifs_dir = os.path.join('.', 'notifs')
-    notifs_files = os.listdir(notifs_dir)
-    daily_dir = os.path.join('.', 'daily')
-    daily_files = os.listdir(daily_dir)
-    member_pics_dir = os.path.join('.', 'member')
-    member_files = os.listdir(member_pics_dir)
-    for config_file, notifs_file, daily_file, member_pics_file in zip(config_files, notifs_files, daily_files, member_files):
-        config_file_path = os.path.join(config_dir, config_file)
-        notifs_file_path = os.path.join(notifs_dir, notifs_file)
-        daily_file_path = os.path.join(daily_dir, daily_file)
-        member_pics_file_path = os.path.join(member_pics_dir, member_pics_file)
-        s_id = config_file
-        servers[s_id] = server.Server(config_file, config_file_path, notifs_file_path, daily_file_path, member_pics_file_path)
+async def read_configs(servers):
+    api_root = 'https://api.myjson.com/bins/'
+    id_to_fragment_map = []
+    with open('servers.txt', 'r') as f:
+        id_to_fragment_map = [line.strip().split() for line in f.readlines()]
+
+    async with aiohttp.ClientSession() as session:
+        for s_id, url_fragment in id_to_fragment_map:
+            url = api_root + url_fragment
+            async with session.get(url) as r:
+                if r.status != 200:
+                    print('error: read_configs: could not GET {}'.format(url), file=sys.stderr)
+                    return
+                config = json.loads(await r.text())
+                servers[s_id] = server.Server(s_id, config)
 
 def is_mod(user, s_id, servers):
     server = servers[s_id]
@@ -144,8 +145,8 @@ async def handle_avatar_request(message, client):
         await client.send_message(message.channel, report)
 
 async def post_periodic_pic(server, client):
-    if len(server.daily_pics) > 0:
-        url_fragment = random.choice(server.daily_pics)
+    if len(server.periodic_pics) > 0:
+        url_fragment = random.choice(server.periodic_pics)
         url = 'http://i.imgur.com/{}.jpg'.format(url_fragment)
         main_chan = client.get_channel(server.main_chan)
         await client.send_message(main_chan, url)
@@ -156,14 +157,6 @@ async def dialogue(message, _, client):
     dest = message.author if message.server is None else message.channel
     reply = 'I love you too {0.mention}'.format(message.author)
     await client.send_message(dest, reply)
-
-async def check_musicbot(music_voice_chan, music_text_chan, bot_id, client):
-    voice_chan = client.get_channel(music_voice_chan)
-    bot_connected = any(member.id == bot_id for member in voice_chan.voice_members)
-    if not bot_connected:
-        print('Detected disconnected bot, restarting...')
-        text_chan = client.get_channel(music_text_chan)
-        await client.send_message(text_chan, '+restart')
 
 def now():
     return time.strftime('[%y%m%d %H:%M]')
