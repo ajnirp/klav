@@ -288,7 +288,8 @@ async def handle_list_emojis_request(message, client):
     await client.send_message(message.channel, report)
 
 async def handle_remove_command_request(message, servers, client, id_to_fragment_map):
-    if message.content[0] not in '.!': return
+    if message.content[0] != ',': return
+    if not is_mod(message.author, message.server.id, servers): return
 
     split = message.content.split()
     if len(split) != 2: return
@@ -336,7 +337,8 @@ async def handle_remove_command_request(message, servers, client, id_to_fragment
             await client.send_message(message.channel, report)
 
 async def handle_add_command_request(message, servers, client, id_to_fragment_map):
-    if message.content[0] not in '.!': return
+    if message.content[0] != ',': return
+    if not is_mod(message.author, message.server.id, servers): return
 
     split = message.content.split()
     if len(split) < 3: return
