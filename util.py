@@ -55,9 +55,8 @@ async def assign_default_role(member, servers, client):
     default_role = discord.utils.find(lambda r: r.id == server.default_role, member.server.roles)
     await client.add_roles(member, default_role)
 
-async def read_configs(servers):
+async def read_configs(servers, id_to_fragment_map):
     api_root = 'https://api.myjson.com/bins/'
-    id_to_fragment_map = []
     with open('servers.txt', 'r') as f:
         id_to_fragment_map = [line.strip().split() for line in f.readlines()]
 
@@ -286,3 +285,45 @@ async def handle_list_emojis_request(message, client):
         idx += 1
     report = ''.join(chunks[start:idx])
     await client.send_message(message.channel, report)
+
+async def handle_add_command_request(message, servers, client, id_to_fragment_map):
+    if message.content[0] not in ['.!']: return
+
+    split = message.content.split()
+    if len(split) < 3: return
+
+    prefix = 'add'
+    if message.content[1:1+len(prefix)] != prefix: return
+
+    input_ = split[1]
+    output_ = ' '.join(split[2:])
+    server = servers[message.server.id]
+
+    server.command_map[input_] = output_
+    headers = { 'Content-Type': 'application/json; charset=utf-8', 'Data-Type': 'json', }
+    config = {
+        'channels': [server.welcome_chan, server.main_chan, server.bias_chan],
+        'log_chan': server.log_chan,
+        'do_not_log': server.do_not_log,
+        'default_role': server.default_role,
+        'welcome_msg': server.welcome_msg,
+        'mod_roles': server.mod_roles,
+        'gallery_chan': server.gallery_chan,
+        'do_not_copy_to_gallery': server.do_not_copy_to_gallery,
+        'role_map': role_map,
+        'command_map': server.command_map,
+        'member_nicknames': server.member_nicknames,
+        'member_pics': server.member_pics,
+        'periodic_pics': server.daily_pics,
+    }
+
+    api_root = 'https://api.myjson.com/bins/'
+    for s_id, url_fragment in id_to_fragment_map:
+        if s_id == message.server.id:
+            url = api_root + url_fragment
+            async with aiohttp.ClientSession() as session:
+                async with session.put(url, data=json.dumps(config), headers=headers) as r:
+                    if r.status == 201:
+                        await client.send_message(message.channel, 'added command {} with response {}'.format(input_, output_))
+                    else:
+                        await client.send_message(message.channel, 'failed to add command: {}'.format(input_))
