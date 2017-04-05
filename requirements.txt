@@ -4,3 +4,4 @@ cffi==1.7.0
 pytz==2016.10
 validators==0.11.2
 aiohttp==2.0.5
+requests==2.13.0

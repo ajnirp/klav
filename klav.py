@@ -79,6 +79,7 @@ async def on_message(message):
 
     # @everyone
     await util.handle_add_command_request(message, servers, client, id_to_fragment_map)
+    await util.handle_remove_command_request(message, servers, client, id_to_fragment_map)
     await util.handle_list_emojis_request(message, client)
     await util.handle_avatar_request(message, client)
     await util.handle_member_pic_request(message, servers, client)
@@ -168,6 +169,6 @@ async def periodic_post_task(client):
         await asyncio.sleep(60)
 
 if __name__ == '__main__':
-    client.loop.create_task(util.read_configs(servers, id_to_fragment_map))
+    id_to_fragment_map = util.read_configs(servers)
     client.loop.create_task(periodic_post_task(client))
     client.run(os.environ['F_BOT_TOKEN'])

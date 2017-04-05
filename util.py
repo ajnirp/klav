@@ -1,4 +1,3 @@
-import aiohttp
 import asyncio
 import datetime
 import discord
@@ -6,6 +5,7 @@ import json
 import os
 import pytz
 import random
+import requests
 import server
 import sys
 import time
@@ -55,20 +55,21 @@ async def assign_default_role(member, servers, client):
     default_role = discord.utils.find(lambda r: r.id == server.default_role, member.server.roles)
     await client.add_roles(member, default_role)
 
-async def read_configs(servers, id_to_fragment_map):
+def read_configs(servers):
     api_root = 'https://api.myjson.com/bins/'
     with open('servers.txt', 'r') as f:
         id_to_fragment_map = [line.strip().split() for line in f.readlines()]
 
-    async with aiohttp.ClientSession() as session:
-        for s_id, url_fragment in id_to_fragment_map:
-            url = api_root + url_fragment
-            async with session.get(url) as r:
-                if r.status != 200:
-                    print('error: read_configs: could not GET {}'.format(url), file=sys.stderr)
-                    return
-                config = json.loads(await r.text())
-                servers[s_id] = server.Server(s_id, config)
+    for s_id, url_fragment in id_to_fragment_map:
+        url = api_root + url_fragment
+        r = requests.get(url)
+        if r.status_code != 200:
+            print('error: read_configs: could not GET {}'.format(url), file=sys.stderr)
+            return
+        config = json.loads(r.text)
+        servers[s_id] = server.Server(s_id, config)
+
+    return id_to_fragment_map
 
 def is_mod(user, s_id, servers):
     server = servers[s_id]
@@ -286,21 +287,28 @@ async def handle_list_emojis_request(message, client):
     report = ''.join(chunks[start:idx])
     await client.send_message(message.channel, report)
 
-async def handle_add_command_request(message, servers, client, id_to_fragment_map):
-    if message.content[0] not in ['.!']: return
+async def handle_remove_command_request(message, servers, client, id_to_fragment_map):
+    if message.content[0] not in '.!': return
 
     split = message.content.split()
-    if len(split) < 3: return
+    if len(split) != 2: return
 
-    prefix = 'add'
+    prefix = 'remove'
     if message.content[1:1+len(prefix)] != prefix: return
 
-    input_ = split[1]
-    output_ = ' '.join(split[2:])
     server = servers[message.server.id]
 
-    server.command_map[input_] = output_
+    input_ = split[1]
+    if input_ not in server.command_map:
+        report = ':no_entry: The command **{}** does not exist'.format(input_)
+        await client.send_message(message.channel, report)
+        return
+
+    output_ = server.command_map[input_]
+    del server.command_map[input_]
+
     headers = { 'Content-Type': 'application/json; charset=utf-8', 'Data-Type': 'json', }
+    role_map = { name: [id1, id2] for (name, (id1, id2)) in server.role_map.items() }
     config = {
         'channels': [server.welcome_chan, server.main_chan, server.bias_chan],
         'log_chan': server.log_chan,
@@ -314,16 +322,58 @@ async def handle_add_command_request(message, servers, client, id_to_fragment_ma
         'command_map': server.command_map,
         'member_nicknames': server.member_nicknames,
         'member_pics': server.member_pics,
-        'periodic_pics': server.daily_pics,
+        'periodic_pics': server.periodic_pics,
     }
 
     api_root = 'https://api.myjson.com/bins/'
     for s_id, url_fragment in id_to_fragment_map:
         if s_id == message.server.id:
             url = api_root + url_fragment
-            async with aiohttp.ClientSession() as session:
-                async with session.put(url, data=json.dumps(config), headers=headers) as r:
-                    if r.status == 201:
-                        await client.send_message(message.channel, 'added command {} with response {}'.format(input_, output_))
-                    else:
-                        await client.send_message(message.channel, 'failed to add command: {}'.format(input_))
+            r = requests.put(url, data=json.dumps(config), headers=headers)
+            report = ':white_check_mark: Removed command **{}** (response was: {})'.format(input_, output_)
+            if r.status_code != requests.codes.ok:
+                report = ':no_entry: Failed to remove command: **{}**. Error code: **{}**'.format(input_, r.status_code)
+            await client.send_message(message.channel, report)
+
+async def handle_add_command_request(message, servers, client, id_to_fragment_map):
+    if message.content[0] not in '.!': return
+
+    split = message.content.split()
+    if len(split) < 3: return
+
+    prefix = 'add'
+    if message.content[1:1+len(prefix)] != prefix: return
+
+    input_ = split[1]
+    output_ = ' '.join(split[2:])
+    server = servers[message.server.id]
+
+    server.command_map[input_] = output_
+
+    headers = { 'Content-Type': 'application/json; charset=utf-8', 'Data-Type': 'json', }
+    role_map = { name: [id1, id2] for (name, (id1, id2)) in server.role_map.items() }
+    config = {
+        'channels': [server.welcome_chan, server.main_chan, server.bias_chan],
+        'log_chan': server.log_chan,
+        'do_not_log': server.do_not_log,
+        'default_role': server.default_role,
+        'welcome_msg': server.welcome_msg,
+        'mod_roles': server.mod_roles,
+        'gallery_chan': server.gallery_chan,
+        'do_not_copy_to_gallery': server.do_not_copy_to_gallery,
+        'role_map': role_map,
+        'command_map': server.command_map,
+        'member_nicknames': server.member_nicknames,
+        'member_pics': server.member_pics,
+        'periodic_pics': server.periodic_pics,
+    }
+
+    api_root = 'https://api.myjson.com/bins/'
+    for s_id, url_fragment in id_to_fragment_map:
+        if s_id == message.server.id:
+            url = api_root + url_fragment
+            r = requests.put(url, data=json.dumps(config), headers=headers)
+            report = ':white_check_mark: Added command **{}** with response {}'.format(input_, output_)
+            if r.status_code != requests.codes.ok:
+                report = ':no_entry: Failed to add command: **{}**. Error code: **{}**'.format(input_, r.status_code)
+            await client.send_message(message.channel, report)

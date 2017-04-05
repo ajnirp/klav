@@ -7,6 +7,7 @@ class Server:
         self.log_chan = config['log_chan']
         self.do_not_log = config['do_not_log']
         self.default_role = config['default_role']
+        self.role_map = config['role_map']
         self.welcome_msg = config['welcome_msg']
         self.mod_roles = config['mod_roles']
         self.gallery_chan = config['gallery_chan']
