@@ -263,6 +263,33 @@ async def gallery_update(message, servers, client):
 
         await client.send_message(gallery_chan, report)
 
+async def handle_list_roles_request(message, client):
+    '''Post information about the roles in a server'''
+    if message.content != ',roles': return
+
+    MESSAGE_LIMIT = 2000
+    chunks = []
+
+    for role in sorted(message.server.roles, key=lambda r: r.position, reverse=True):
+        if role.name == '@everyone': continue
+        c = role.color
+        message_chunk = '**{}** {} {}\n'.format(role.name, c.to_tuple(), hex(c.value))
+        chunks.append(message_chunk)
+    if len(chunks) == 0:
+        await client.send_message(message.channel, ':bangbang: No roles found on this server')
+        return
+    cumulative_len, start, idx = 0, 0, 0
+    for chunk in chunks:
+        cumulative_len += len(chunk)
+        if cumulative_len > MESSAGE_LIMIT:
+            report = ''.join(chunks[start:idx])
+            await client.send_message(message.channel, report)
+            start = idx
+            cumulative_len = 0
+        idx += 1
+    report = ''.join(chunks[start:idx])
+    await client.send_message(message.channel, report)
+
 async def handle_list_emojis_request(message, client):
     '''Post all the emojis in a server'''
     if message.content not in ['.emojis', '!emojis']: return
@@ -270,11 +297,13 @@ async def handle_list_emojis_request(message, client):
     MESSAGE_LIMIT = 2000
     chunks = []
 
+    # the [:-1] is so that we ignore @everyone
     for emoji in sorted(message.server.emojis, key=lambda e: e.name):
         message_chunk = '{} <:{}:{}>  '.format(emoji.name, emoji.name, emoji.id)
         chunks.append(message_chunk)
     if len(chunks) == 0:
-        await client.send_message(message.channel, 'No emojis found :frowning:')
+        await client.send_message(message.channel, ':bangbang: No emojis found on this server')
+        return
     cumulative_len, start, idx = 0, 0, 0
     for chunk in chunks:
         cumulative_len += len(chunk)
