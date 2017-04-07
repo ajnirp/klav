@@ -263,9 +263,10 @@ async def gallery_update(message, servers, client):
 
         await client.send_message(gallery_chan, report)
 
-async def handle_list_roles_request(message, client):
+async def handle_list_roles_request(message, servers, client):
     '''Post information about the roles in a server'''
     if message.content != ',roles': return
+    if not is_mod(message.author, message.server.id, servers): return
 
     MESSAGE_LIMIT = 2000
     chunks = []
