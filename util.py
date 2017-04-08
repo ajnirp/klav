@@ -412,7 +412,8 @@ def make_put_request_update_config(message, server, id_to_fragment_map):
 
     return None
 
-async def set_gallery_channel(message, servers, client):
+async def set_gallery_channel(message, servers, client, id_to_fragment_map):
+    '''Set the gallery channel for a server'''
     if not message.content.startswith('-'): return
     if not is_owner(message.author): return
 
@@ -425,6 +426,7 @@ async def set_gallery_channel(message, servers, client):
         return
 
     channel = message.channel_mentions[0]
+    server = servers[message.server.id]
 
     headers = { 'Content-Type': 'application/json; charset=utf-8', 'Data-Type': 'json', }
     config = build_config_dict(server)
@@ -435,6 +437,12 @@ async def set_gallery_channel(message, servers, client):
         if s_id == message.server.id:
             url = api_root + url_fragment
             r = requests.put(url, data=json.dumps(config), headers=headers)
-            return r
 
-    return None
+    if r is None:
+        await client.send_message(message.channel, ':skull_crossbones: Error updating config')
+        return
+    
+    report = ':white_check_mark: Gallery channel is now: {0.mention}'.format(channel)
+    if r.status_code != requests.codes.ok:
+        report = ':no_entry: Failed to add update gallery channel. Error code: **{}**'.format(r.status_code)
+    await client.send_message(message.channel, report)

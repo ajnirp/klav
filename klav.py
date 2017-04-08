@@ -71,11 +71,11 @@ async def on_message(message):
 
     await util.dialogue(message, servers, client)
 
-    if message.content[0] not in ',!.': return
+    if message.content[0] not in ',!.-': return
 
     # Bot owner only
     # These commands start with -
-    await util.set_gallery_channel(message, servers, client)
+    await util.set_gallery_channel(message, servers, client, id_to_fragment_map)
 
     # Moderators only
     # These commands start with .
