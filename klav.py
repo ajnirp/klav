@@ -73,7 +73,12 @@ async def on_message(message):
 
     if message.content[0] not in ',!.': return
 
+    # Bot owner only
+    # These commands start with -
+    await util.set_gallery_channel(message, servers, client)
+
     # Moderators only
+    # These commands start with .
     await util.delete_messages(message, servers, client)
     await util.kick_members(message, servers, client)
     await util.handle_list_roles_request(message, servers, client)

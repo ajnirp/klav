@@ -75,6 +75,9 @@ def is_mod(user, s_id, servers):
     server = servers[s_id]
     return any(role.id in server.mod_roles for role in user.roles)
 
+def is_owner(user):
+    return user.id == '150919851710480384'
+
 async def delete_messages(message, servers, client):
     if not message.content.startswith(',d'): return
     if not is_mod(message.author, message.server.id, servers): return
@@ -378,10 +381,9 @@ async def handle_add_command_request(message, servers, client, id_to_fragment_ma
         report = ':no_entry: Failed to add command: **{}**. Error code: **{}**'.format(input_, r.status_code)
     await client.send_message(message.channel, report)
 
-def make_put_request_update_config(message, server, id_to_fragment_map):
-    headers = { 'Content-Type': 'application/json; charset=utf-8', 'Data-Type': 'json', }
+def build_config_dict(server):
     role_map = { name: [id1, id2] for (name, (id1, id2)) in server.role_map.items() }
-    config = {
+    return {
         'channels': [server.welcome_chan, server.main_chan, server.bias_chan],
         'log_chan': server.log_chan,
         'do_not_log': server.do_not_log,
@@ -396,6 +398,37 @@ def make_put_request_update_config(message, server, id_to_fragment_map):
         'member_pics': server.member_pics,
         'periodic_pics': server.periodic_pics,
     }
+
+def make_put_request_update_config(message, server, id_to_fragment_map):
+    headers = { 'Content-Type': 'application/json; charset=utf-8', 'Data-Type': 'json', }
+    config = build_config_dict(server)
+
+    api_root = 'https://api.myjson.com/bins/'
+    for s_id, url_fragment in id_to_fragment_map:
+        if s_id == message.server.id:
+            url = api_root + url_fragment
+            r = requests.put(url, data=json.dumps(config), headers=headers)
+            return r
+
+    return None
+
+async def set_gallery_channel(message, servers, client):
+    if not message.content.startswith('-'): return
+    if not is_owner(message.author): return
+
+    prefix = 'sgc'
+    if message.content[1:1+len(prefix)] != prefix: return
+
+    if len(message.channel_mentions) != 1:
+        report = ':exclamation: Usage: -sgc #channel'
+        await client.send_message(message.channel, report)
+        return
+
+    channel = message.channel_mentions[0]
+
+    headers = { 'Content-Type': 'application/json; charset=utf-8', 'Data-Type': 'json', }
+    config = build_config_dict(server)
+    config['gallery_chan'] = channel.id
 
     api_root = 'https://api.myjson.com/bins/'
     for s_id, url_fragment in id_to_fragment_map:
