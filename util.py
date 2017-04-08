@@ -420,17 +420,19 @@ async def set_gallery_channel(message, servers, client, id_to_fragment_map):
     prefix = 'sgc'
     if message.content[1:1+len(prefix)] != prefix: return
 
-    if len(message.channel_mentions) != 1:
-        report = ':exclamation: Usage: -sgc #channel'
+    if len(message.channel_mentions) == 0:
+        report = ':exclamation: Usage: -sgc [#channel_mention]+'
         await client.send_message(message.channel, report)
         return
 
     channel = message.channel_mentions[0]
+    to_ignore = [c.id for c in message.channel_mentions[1:]]
     server = servers[message.server.id]
 
     headers = { 'Content-Type': 'application/json; charset=utf-8', 'Data-Type': 'json', }
     config = build_config_dict(server)
     config['gallery_chan'] = channel.id
+    config['do_not_copy_to_gallery'] = to_ignore
 
     api_root = 'https://api.myjson.com/bins/'
     for s_id, url_fragment in id_to_fragment_map:
