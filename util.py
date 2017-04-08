@@ -444,9 +444,10 @@ async def set_gallery_channel(message, servers, client, id_to_fragment_map):
         await client.send_message(message.channel, ':skull_crossbones: Error updating config')
         return
     
-    report = ':white_check_mark: Gallery channel is now: {0.mention}'.format(channel)
+    report = ':white_check_mark: Gallery channel is now: {0.mention}. Ignored channels: '.format(channel)
+    report += ', '.join(c.mention for c in message.channel_mentions[1:])
     if r.status_code != requests.codes.ok:
-        report = ':no_entry: Failed to add update gallery channel. Error code: **{}**'.format(r.status_code)
+        report = ':no_entry: Failed to configure gallery. Error code: **{}**'.format(r.status_code)
     else:
         id_to_fragment_map = read_configs(servers)
     await client.send_message(message.channel, report)
@@ -465,20 +466,20 @@ async def list_special_channels(message, servers, client):
         welcome_chan = client.get_channel(server.welcome_chan)
         report[0] = 'Welcome channel: {0.mention}'.format(welcome_chan)
 
-    if server.bias_chan is None: report[1] = 'No welcome channel'
+    if server.bias_chan is None: report[1] = 'No bias channel'
     else:
         bias_chan = client.get_channel(server.bias_chan)
         report[1] = 'Bias channel: {0.mention}'.format(bias_chan)
 
-    if server.log_chan is None: report[2] = 'No welcome channel'
+    if server.log_chan is None: report[2] = 'No log channel'
     else:
         log_chan = client.get_channel(server.log_chan)
         report[2] = 'Log channel: {0.mention}'.format(log_chan)
 
-    if server.gallery_chan is None: report[3] = 'No welcome channel'
+    if server.gallery_chan is None: report[3] = 'No gallery'
     else:
         gallery_chan = client.get_channel(server.gallery_chan)
-        report[3] = 'Gallery: {0.mention}'.format(gallery_chan)
+        report[3] = 'Gallery: {0.mention}.'.format(gallery_chan)
 
     report = '\n'.join(report)
     await client.send_message(message.channel, report)
