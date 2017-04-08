@@ -106,7 +106,7 @@ async def command(message, servers, client):
         await client.send_message(message.channel, response)
 
 async def help(message, servers, client):
-    if message.content not in ['.h', '!h']: return
+    if message.content not in ['.h', '!h', '.help', '!help']: return
     server = servers[message.server.id]
 
     help_str = 'Commands:\n'
