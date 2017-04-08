@@ -445,4 +445,38 @@ async def set_gallery_channel(message, servers, client, id_to_fragment_map):
     report = ':white_check_mark: Gallery channel is now: {0.mention}'.format(channel)
     if r.status_code != requests.codes.ok:
         report = ':no_entry: Failed to add update gallery channel. Error code: **{}**'.format(r.status_code)
+    else:
+        id_to_fragment_map = read_configs(servers)
+    await client.send_message(message.channel, report)
+
+async def list_special_channels(message, servers, client):
+    '''List the welcome, bias, log and gallery channels'''
+    if not is_owner(message.author): return
+    if not message.content == '-lsc': return
+
+    server = servers[message.server.id]
+
+    report = [0,0,0,0]
+
+    if server.welcome_chan is None: report[0] = 'No welcome channel'
+    else:
+        welcome_chan = client.get_channel(server.welcome_chan)
+        report[0] = 'Welcome channel: {0.mention}'.format(welcome_chan)
+
+    if server.bias_chan is None: report[1] = 'No welcome channel'
+    else:
+        bias_chan = client.get_channel(server.bias_chan)
+        report[1] = 'Bias channel: {0.mention}'.format(bias_chan)
+
+    if server.log_chan is None: report[2] = 'No welcome channel'
+    else:
+        log_chan = client.get_channel(server.log_chan)
+        report[2] = 'Log channel: {0.mention}'.format(log_chan)
+
+    if server.gallery_chan is None: report[3] = 'No welcome channel'
+    else:
+        gallery_chan = client.get_channel(server.gallery_chan)
+        report[3] = 'Gallery: {0.mention}'.format(gallery_chan)
+
+    report = '\n'.join(report)
     await client.send_message(message.channel, report)
