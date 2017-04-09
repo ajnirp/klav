@@ -352,6 +352,7 @@ async def handle_remove_command_request(message, servers, client, id_to_fragment
     await client.send_message(message.channel, report)
 
 async def handle_add_command_request(message, servers, client, id_to_fragment_map):
+    '''Add a command to the server'''
     if message.content[0] != ',': return
     if not is_mod(message.author, message.server.id, servers) and not is_owner(message.author): return
 
@@ -375,11 +376,42 @@ async def handle_add_command_request(message, servers, client, id_to_fragment_ma
     if r is None:
         await client.send_message(message.channel, ':skull_crossbones: Error updating config')
         return
-    
+
     report = ':white_check_mark: Added command **{}** with response {}'.format(input_, output_)
     if r.status_code != requests.codes.ok:
         report = ':no_entry: Failed to add command: **{}**. Error code: **{}**'.format(input_, r.status_code)
     await client.send_message(message.channel, report)
+
+async def handle_command_alias_request(message, servers, client, id_to_fragment_map):
+    '''Alias one command to another'''
+    if message.content[0] != ',': return
+    if not is_mod(message.author, message.server.id, servers) and not is_owner(message.author): return
+
+    split = message.content.split()
+    if len(split) < 3: return
+
+    prefix = 'alias'
+    if message.content[1:1+len(prefix)] != prefix: return
+
+    input_, output_ = split[1], split[2]
+    server = servers[message.server.id]
+
+    if input_ in server.command_map:
+        report = ':bangbang: The command **{}** already exists. Please remove it before adding a new one.'.format(input_)
+        await client.send_message(message.channel, report)
+        return
+    server.command_map[input_] = server.command_map[output_]
+
+    r = make_put_request_update_config(message, server, id_to_fragment_map)
+    if r is None:
+        await client.send_message(message.channel, ':skull_crossbones: Error updating config')
+        return
+
+    report = ':white_check_mark: The command **{}** has been aliased to **{}**'.format(input_, output_)
+    if r.status_code != requests.codes.ok:
+        report = ':no_entry: Failed to add alias: **{}**. Error code: **{}**'.format(input_, r.status_code)
+    await client.send_message(message.channel, report)
+
 
 def build_config_dict(server):
     role_map = { name: [id1, id2] for (name, (id1, id2)) in server.role_map.items() }
@@ -443,7 +475,7 @@ async def set_gallery_channel(message, servers, client, id_to_fragment_map):
     if r is None:
         await client.send_message(message.channel, ':skull_crossbones: Error updating config')
         return
-    
+
     report = ':white_check_mark: Gallery channel is now: {0.mention}. Ignored channels: '.format(channel)
     report += ', '.join(c.mention for c in message.channel_mentions[1:])
     if r.status_code != requests.codes.ok:

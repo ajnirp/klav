@@ -84,6 +84,7 @@ async def on_message(message):
     await util.kick_members(message, servers, client)
     await util.handle_list_roles_request(message, servers, client)
     await util.handle_add_command_request(message, servers, client, id_to_fragment_map)
+    await util.handle_command_alias_request(message, servers, client, id_to_fragment_map)
     await util.handle_remove_command_request(message, servers, client, id_to_fragment_map)
 
     # @everyone
