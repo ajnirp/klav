@@ -353,7 +353,7 @@ async def handle_remove_command_request(message, servers, client, id_to_fragment
 
 async def handle_add_command_request(message, servers, client, id_to_fragment_map):
     if message.content[0] != ',': return
-    if not is_mod(message.author, message.server.id, servers): return
+    if not is_mod(message.author, message.server.id, servers) and not is_owner(message.author): return
 
     split = message.content.split()
     if len(split) < 3: return
