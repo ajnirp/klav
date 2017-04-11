@@ -130,20 +130,20 @@ async def handle_commands_request(message, servers, client):
 async def handle_info_request(message, servers, client):
     if message.content not in ['.h', '!h', '.help', '!help']: return
     usage = '''
-__**Dai5ybot** Help__
+__**DAI5YBOT HELP**__
 
 Dai5ybot is a kpop server bot. Among other things, it can handle commands.
 
-Commands that start with `-` can only be used by the bot owner.
-Commands that start with `.` can be used by anyone on the server.
-Any command that starts with `.` can also start with `!`, there is no difference.
-Commands that start with `,` can only be used by mods.
+Commands that start with `-` (hyphen) can only be used by the bot owner.
+Commands that start with `.` (period) can be used by anyone on the server.
+Any command that starts with `.` (period) can also start with `!` (exclamation mark), there is no difference.
+Commands that start with `,` (comma) can only be used by mods.
 
 The exceptions are `,add` `,alias` and `,remove`. The bot owner can use these commands as well.
 
 __**Reference**__
 
-Commands that everyone can use:
+>>> Commands that everyone can use:
 
 `.commands` See all commands for the current server.
 
@@ -151,7 +151,7 @@ Commands that everyone can use:
 
 `.help` The bot direct-messages you with this help message.
 
-Commands that moderators can use:
+>>> Commands that moderators can use:
 
 `,add name response` Add a new command.
 Example: `,add hello http://i.imgur.com/F5FJw0b.jpg`
@@ -170,7 +170,7 @@ Q. Can I view the source code?
 A. No, Dai5ybot isn't open source.
 
 Q. What's the story behind the name?
-A. Dai5y is the fandom name for Girl's Day.
+A. Dai5y is the fandom name for Girl's Day!
 
 For more information, contact the bot owner, **ssozi** (user ID: 150919851710480384).
 '''
@@ -371,7 +371,7 @@ async def handle_list_emojis_request(message, client):
 
 async def handle_remove_command_request(message, servers, client, id_to_fragment_map):
     if message.content[0] != ',': return
-    if not is_mod(message.author, message.server.id, servers): return
+    if not is_mod(message.author, message.server.id, servers) and not is_owner(message.author): return
 
     split = message.content.split()
     if len(split) != 2: return
