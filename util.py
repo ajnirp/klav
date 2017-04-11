@@ -449,6 +449,12 @@ async def handle_command_alias_request(message, servers, client, id_to_fragment_
         report = ':bangbang: The command **{}** already exists. Please remove it before adding a new one.'.format(input_)
         await client.send_message(message.channel, report)
         return
+
+    if output_ not in server.command_map:
+        report = ':no_entry: The command **{}** does not exist'.format(output_)
+        await client.send_message(message.channel, report)
+        return
+
     server.command_map[input_] = server.command_map[output_]
 
     r = make_put_request_update_config(message, server, id_to_fragment_map)
