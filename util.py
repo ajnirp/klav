@@ -431,7 +431,7 @@ async def handle_add_command_request(message, servers, client, id_to_fragment_ma
         report = ':no_entry: Failed to add command: **{}**. Error code: **{}**'.format(input_, r.status_code)
     await client.send_message(message.channel, report)
 
-async def handle_command_alias_request(message, servers, client, id_to_fragment_map):
+async def handle_alias_command_request(message, servers, client, id_to_fragment_map):
     '''Alias one command to another'''
     if message.content[0] != ',': return
     if not is_mod(message.author, message.server.id, servers) and not is_owner(message.author): return
