@@ -93,7 +93,7 @@ async def on_message(message):
     await util.handle_member_pic_request(message, servers, client)
     await util.command(message, servers, client)
     await util.handle_commands_request(message, servers, client)
-    await util.handle_info_request(message, servers, client)
+    await util.handle_help_request(message, servers, client)
     await util.handle_user_info_request(message, servers, client)
     await util.handle_gsd_countdown_request(message, servers, client)
     await util.handle_list_mods_request(message, servers, client)

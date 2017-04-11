@@ -127,7 +127,7 @@ async def handle_commands_request(message, servers, client):
     # chars, the entire thing) of the help string.
     await client.send_message(message.author, help_str)
 
-async def handle_info_request(message, servers, client):
+async def handle_help_request(message, servers, client):
     if message.content not in ['.h', '!h', '.help', '!help']: return
     usage = '''
 __**DAI5YBOT HELP**__
@@ -145,13 +145,20 @@ __**Reference**__
 
 >>> Commands that everyone can use:
 
+`.help` The bot direct-messages you with this help message.
+
 `.commands` See all commands for the current server.
 
 `.emojis` List out all custom emojis on a server.
 
-`.help` The bot direct-messages you with this help message.
+`.u @user` List some information about a user (roles, date of joining, etc.).
+
+`.a @user` Display a user's low-resolution Discord avatar.
 
 >>> Commands that moderators can use:
+
+`,d50` Delete the last 50 messages on the server.
+You can replace 50 by any number you like. Note: Discord does __not_ allow you to bulk-delete messages that are older than a certain number of days.
 
 `,add name response` Add a new command.
 Example: `,add hello http://i.imgur.com/F5FJw0b.jpg`
@@ -163,14 +170,6 @@ Example: `,alias hi hello`
 Example: `,remove hello`
 
 `,roles` List out all roles on a server.
-
-__**FAQ**__
-
-Q. Can I view the source code?
-A. No, Dai5ybot isn't open source.
-
-Q. What's the story behind the name?
-A. Dai5y is the fandom name for Girl's Day!
 
 For more information, contact the bot owner, **ssozi** (user ID: 150919851710480384).
 '''
@@ -370,6 +369,7 @@ async def handle_list_emojis_request(message, client):
     await client.send_message(message.channel, report)
 
 async def handle_remove_command_request(message, servers, client, id_to_fragment_map):
+    '''Remove a command from the server'''
     if message.content[0] != ',': return
     if not is_mod(message.author, message.server.id, servers) and not is_owner(message.author): return
 
