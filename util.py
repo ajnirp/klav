@@ -316,8 +316,8 @@ async def gallery_update(message, servers, client):
 
 async def handle_list_roles_request(message, servers, client):
     '''Post information about the roles in a server'''
-    if message.content != ',roles': return
-    if not is_mod(message.author, message.server.id, servers): return
+    if message.content != '-roles': return
+    if not is_owner(message.author): return
 
     MESSAGE_LIMIT = 2000
     chunks = []
@@ -327,9 +327,12 @@ async def handle_list_roles_request(message, servers, client):
         c = role.color
         message_chunk = '**{}** {} {}\n'.format(role.name, c.to_tuple(), hex(c.value))
         chunks.append(message_chunk)
+
     if len(chunks) == 0:
         await client.send_message(message.channel, ':bangbang: No roles found on this server')
         return
+
+    await client.send_message(message.channel, '__**Roles on this server**__')
     cumulative_len, start, idx = 0, 0, 0
     for chunk in chunks:
         cumulative_len += len(chunk)

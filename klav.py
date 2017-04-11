@@ -77,17 +77,20 @@ async def on_message(message):
     # These commands start with -
     await util.set_gallery_channel(message, servers, client, id_to_fragment_map)
     await util.list_special_channels(message, servers, client)
-
-    # Moderators only
-    # These commands start with .
-    await util.delete_messages(message, servers, client)
-    await util.kick_members(message, servers, client)
     await util.handle_list_roles_request(message, servers, client)
+
+    # Bot owner and moderators ownly
     await util.handle_add_command_request(message, servers, client, id_to_fragment_map)
     await util.handle_alias_command_request(message, servers, client, id_to_fragment_map)
     await util.handle_remove_command_request(message, servers, client, id_to_fragment_map)
 
+    # Moderators only
+    # These commands start with ,
+    await util.delete_messages(message, servers, client)
+    await util.kick_members(message, servers, client)
+
     # @everyone
+    # These commands start with .
     await util.handle_list_emojis_request(message, client)
     await util.handle_avatar_request(message, client)
     await util.handle_member_pic_request(message, servers, client)
