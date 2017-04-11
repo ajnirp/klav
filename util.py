@@ -108,8 +108,8 @@ async def command(message, servers, client):
         response = server.command_map[command_str]
         await client.send_message(message.channel, response)
 
-async def help(message, servers, client):
-    if message.content not in ['.h', '!h', '.help', '!help']: return
+async def handle_commands_request(message, servers, client):
+    if message.content not in ['.commands', '!commands']: return
     server = servers[message.server.id]
 
     help_str = 'Commands:\n'
@@ -126,6 +126,55 @@ async def help(message, servers, client):
     # Send the remainder (or, in case the total message never crossed 2000
     # chars, the entire thing) of the help string.
     await client.send_message(message.author, help_str)
+
+async def handle_info_request(message, servers, client):
+    if message.content not in ['.h', '!h', '.help', '!help']: return
+    usage = '''
+__**Dai5ybot** Help__
+
+Dai5ybot is a kpop server bot. Among other things, it can handle commands.
+
+Commands that start with `-` can only be used by the bot owner.
+Commands that start with `.` can be used by anyone on the server.
+Any command that starts with `.` can also start with `!`, there is no difference.
+Commands that start with `,` can only be used by mods.
+
+The exceptions are `,add` `,alias` and `,remove`. The bot owner can use these commands as well.
+
+__**Reference**__
+
+Commands that everyone can use:
+
+`.commands` See all commands for the current server.
+
+`.emojis` List out all custom emojis on a server.
+
+`.help` The bot direct-messages you with this help message.
+
+Commands that moderators can use:
+
+`,add name response` Add a new command.
+Example: `,add hello http://i.imgur.com/F5FJw0b.jpg`
+
+`,alias new_name old_name` Add a new command that has the same response as an existing command.
+Example: `,alias hi hello`
+
+`,remove name` Remove an existing command.
+Example: `,remove hello`
+
+`,roles` List out all roles on a server.
+
+__**FAQ**__
+
+Q. Can I view the source code?
+A. No, Dai5ybot isn't open source.
+
+Q. What's the story behind the name?
+A. Dai5y is the fandom name for Girl's Day.
+
+For more information, contact the bot owner, **ssozi** (user ID: 150919851710480384).
+'''
+    await client.send_message(message.author, usage)
 
 async def handle_member_pic_request(message, servers, client):
     if message.content[0] not in '.!': return
