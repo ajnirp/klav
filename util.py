@@ -158,7 +158,7 @@ __**Reference**__
 >>> Commands that moderators can use:
 
 `,d50` Delete the last 50 messages on the server.
-You can replace 50 by any number you like. Note: Discord does __not_ allow you to bulk-delete messages that are older than a certain number of days.
+You can replace 50 by any number you like. Note: Discord does __not__ allow you to bulk-delete messages that are older than a certain number of days.
 
 `,add name response` Add a new command.
 Example: `,add hello http://i.imgur.com/F5FJw0b.jpg`
