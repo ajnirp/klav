@@ -314,6 +314,33 @@ async def gallery_update(message, servers, client):
 
         await client.send_message(gallery_chan, report)
 
+async def toggle_leave_message(message, servers, client, id_to_fragment_map):
+    if message.content != '-tlm': return
+    if not is_owner(message.author): return
+
+    server = servers[message.server.id]
+    config = build_config_dict(server)
+
+    key = 'announce_member_leaving'
+    if key not in config:
+        config[key] = False
+    else:
+        config[key] = not config[key]
+
+    r = make_put_request_update_config(message, config, id_to_fragment_map)
+    if r is None:
+        await client.send_message(message.channel, ':skull_crossbones: Error updating config')
+        return
+
+    if r.status_code != requests.codes.ok:
+        report = ':no_entry: Failed to toggle leave message. Error code: **{}**'.format(r.status_code)
+    else:
+        id_to_fragment_map = read_configs(servers)
+        report = ':white_check_mark: Member leaving messages are now **{}** on this server'
+        report = report.format(['disabled', 'enabled'][config[key]])
+
+    await client.send_message(message.channel, report)
+
 async def handle_list_roles_request(message, servers, client):
     '''Post information about the roles in a server'''
     if message.content != '-roles': return
@@ -393,7 +420,8 @@ async def handle_remove_command_request(message, servers, client, id_to_fragment
     output_ = server.command_map[input_]
     del server.command_map[input_]
 
-    r = make_put_request_update_config(message, server, id_to_fragment_map)
+    config = build_config_dict(server)
+    r = make_put_request_update_config(message, config, id_to_fragment_map)
     if r is None:
         await client.send_message(message.channel, ':skull_crossbones: Error updating config')
         return
@@ -424,7 +452,8 @@ async def handle_add_command_request(message, servers, client, id_to_fragment_ma
         return
     server.command_map[input_] = output_
 
-    r = make_put_request_update_config(message, server, id_to_fragment_map)
+    config = build_config_dict(server)
+    r = make_put_request_update_config(message, config, id_to_fragment_map)
     if r is None:
         await client.send_message(message.channel, ':skull_crossbones: Error updating config')
         return
@@ -460,7 +489,8 @@ async def handle_alias_command_request(message, servers, client, id_to_fragment_
 
     server.command_map[input_] = server.command_map[output_]
 
-    r = make_put_request_update_config(message, server, id_to_fragment_map)
+    config = build_config_dict(server)
+    r = make_put_request_update_config(message, config, id_to_fragment_map)
     if r is None:
         await client.send_message(message.channel, ':skull_crossbones: Error updating config')
         return
@@ -487,11 +517,11 @@ def build_config_dict(server):
         'member_nicknames': server.member_nicknames,
         'member_pics': server.member_pics,
         'periodic_pics': server.periodic_pics,
+        'announce_member_leaving': server.announce_member_leaving,
     }
 
-def make_put_request_update_config(message, server, id_to_fragment_map):
+def make_put_request_update_config(message, config, id_to_fragment_map):
     headers = { 'Content-Type': 'application/json; charset=utf-8', 'Data-Type': 'json', }
-    config = build_config_dict(server)
 
     api_root = 'https://api.myjson.com/bins/'
     for s_id, url_fragment in id_to_fragment_map:
@@ -524,11 +554,7 @@ async def set_gallery_channel(message, servers, client, id_to_fragment_map):
     config['gallery_chan'] = channel.id
     config['do_not_copy_to_gallery'] = to_ignore
 
-    api_root = 'https://api.myjson.com/bins/'
-    for s_id, url_fragment in id_to_fragment_map:
-        if s_id == message.server.id:
-            url = api_root + url_fragment
-            r = requests.put(url, data=json.dumps(config), headers=headers)
+    r = make_put_request_update_config(message, config, id_to_fragment_map)
 
     if r is None:
         await client.send_message(message.channel, ':skull_crossbones: Error updating config')

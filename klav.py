@@ -47,7 +47,10 @@ async def on_member_join(member):
 @client.event
 async def on_member_remove(member):
     if member.server.id == '202834966621585408': return
+
     server = servers[member.server.id]
+    if not server.announce_member_leaving: return
+
     main_chan = client.get_channel(server.main_chan)
     notification = '**{0.name}** has left the server'
     notification = notification.format(member)
@@ -80,6 +83,7 @@ async def on_message(message):
     await util.handle_list_roles_request(message, servers, client)
 
     # Bot owner and moderators ownly
+    await util.toggle_leave_message(message, servers, client, id_to_fragment_map)
     await util.handle_add_command_request(message, servers, client, id_to_fragment_map)
     await util.handle_alias_command_request(message, servers, client, id_to_fragment_map)
     await util.handle_remove_command_request(message, servers, client, id_to_fragment_map)
