@@ -603,8 +603,9 @@ async def list_special_channels(message, servers, client):
     report = '\n'.join(report)
     await client.send_message(message.channel, report)
 
-async def send_wait_and_delete(client, destination, content, delay=5):
+async def send_wait_and_delete(client, destination, content, delete=False, delay=5):
     '''Send a message, wait for a few seconds and then delete it'''
     message = await client.send_message(destination, content)
-    await asyncio.sleep(delay)
-    await client.delete_message(message)
+    if delete:
+        await asyncio.sleep(delay)
+        await client.delete_message(message)
