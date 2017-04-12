@@ -448,20 +448,21 @@ async def handle_add_command_request(message, servers, client, id_to_fragment_ma
 
     if input_ in server.command_map:
         report = ':bangbang: The command **{}** already exists. Please remove it before adding a new one.'.format(input_)
-        await client.send_message(message.channel, report)
+        await send_wait_and_delete(client, message.channel, report)
         return
     server.command_map[input_] = output_
 
     config = build_config_dict(server)
     r = make_put_request_update_config(message, config, id_to_fragment_map)
     if r is None:
-        await client.send_message(message.channel, ':skull_crossbones: Error updating config')
+        report = ':skull_crossbones: Error updating config'
+        await send_wait_and_delete(client, message.channel, report)
         return
 
     report = ':white_check_mark: Added command **{}** with response <{}>'.format(input_, output_)
     if r.status_code != requests.codes.ok:
         report = ':no_entry: Failed to add command: **{}**. Error code: **{}**'.format(input_, r.status_code)
-    await client.send_message(message.channel, report)
+    await send_wait_and_delete(client, message.channel, report)
 
 async def handle_alias_command_request(message, servers, client, id_to_fragment_map):
     '''Alias one command to another'''
@@ -479,12 +480,12 @@ async def handle_alias_command_request(message, servers, client, id_to_fragment_
 
     if input_ in server.command_map:
         report = ':bangbang: The command **{}** already exists. Please remove it before adding a new one.'.format(input_)
-        await client.send_message(message.channel, report)
+        await send_wait_and_delete(client, message.channel, report)
         return
 
     if output_ not in server.command_map:
         report = ':no_entry: The command **{}** does not exist'.format(output_)
-        await client.send_message(message.channel, report)
+        await send_wait_and_delete(client, message.channel, report)
         return
 
     server.command_map[input_] = server.command_map[output_]
@@ -492,13 +493,14 @@ async def handle_alias_command_request(message, servers, client, id_to_fragment_
     config = build_config_dict(server)
     r = make_put_request_update_config(message, config, id_to_fragment_map)
     if r is None:
-        await client.send_message(message.channel, ':skull_crossbones: Error updating config')
+        report = ':skull_crossbones: Error updating config'
+        await send_wait_and_delete(client, message.channel, report)
         return
 
     report = ':white_check_mark: The command **{}** has been aliased to **{}**'.format(input_, output_)
     if r.status_code != requests.codes.ok:
         report = ':no_entry: Failed to add alias: **{}**. Error code: **{}**'.format(input_, r.status_code)
-    await client.send_message(message.channel, report)
+    await send_wait_and_delete(client, message.channel, report)
 
 
 def build_config_dict(server):
@@ -542,7 +544,7 @@ async def set_gallery_channel(message, servers, client, id_to_fragment_map):
 
     if len(message.channel_mentions) == 0:
         report = ':exclamation: Usage: -sgc [#channel_mention]+'
-        await client.send_message(message.channel, report)
+        await send_wait_and_delete(client, message.channel, report)
         return
 
     channel = message.channel_mentions[0]
@@ -557,7 +559,8 @@ async def set_gallery_channel(message, servers, client, id_to_fragment_map):
     r = make_put_request_update_config(message, config, id_to_fragment_map)
 
     if r is None:
-        await client.send_message(message.channel, ':skull_crossbones: Error updating config')
+        report = ':skull_crossbones: Error updating config'
+        await send_wait_and_delete(client, message.channel, report)
         return
 
     report = ':white_check_mark: Gallery channel is now: {0.mention}. Ignored channels: '.format(channel)
@@ -566,7 +569,7 @@ async def set_gallery_channel(message, servers, client, id_to_fragment_map):
         report = ':no_entry: Failed to configure gallery. Error code: **{}**'.format(r.status_code)
     else:
         id_to_fragment_map = read_configs(servers)
-    await client.send_message(message.channel, report)
+    await send_wait_and_delete(client, message.channel, report)
 
 async def list_special_channels(message, servers, client):
     '''List the welcome, bias, log and gallery channels'''
@@ -599,3 +602,9 @@ async def list_special_channels(message, servers, client):
 
     report = '\n'.join(report)
     await client.send_message(message.channel, report)
+
+async def send_wait_and_delete(client, destination, content, delay=5):
+    '''Send a message, wait for a few seconds and then delete it'''
+    message = await client.send_message(destination, content)
+    await asyncio.sleep(delay)
+    await client.delete_message(message)
