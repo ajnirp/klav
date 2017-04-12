@@ -426,7 +426,7 @@ async def handle_remove_command_request(message, servers, client, id_to_fragment
         await client.send_message(message.channel, ':skull_crossbones: Error updating config')
         return
 
-    report = ':white_check_mark: Removed command **{}** (response was: {})'.format(input_, output_)
+    report = ':white_check_mark: Removed command **{}** (response was: <{}>)'.format(input_, output_)
     if r.status_code != requests.codes.ok:
         report = ':no_entry: Failed to remove command: **{}**. Error code: **{}**'.format(input_, r.status_code)
     await client.send_message(message.channel, report)
@@ -458,7 +458,7 @@ async def handle_add_command_request(message, servers, client, id_to_fragment_ma
         await client.send_message(message.channel, ':skull_crossbones: Error updating config')
         return
 
-    report = ':white_check_mark: Added command **{}** with response {}'.format(input_, output_)
+    report = ':white_check_mark: Added command **{}** with response <{}>'.format(input_, output_)
     if r.status_code != requests.codes.ok:
         report = ':no_entry: Failed to add command: **{}**. Error code: **{}**'.format(input_, r.status_code)
     await client.send_message(message.channel, report)
