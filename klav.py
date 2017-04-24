@@ -81,6 +81,7 @@ async def on_message(message):
     await util.set_gallery_channel(message, servers, client, id_to_fragment_map)
     await util.list_special_channels(message, servers, client)
     await util.handle_list_roles_request(message, servers, client)
+    await util.list_servers(message, client)
 
     # Bot owner and moderators ownly
     await util.toggle_leave_message(message, servers, client, id_to_fragment_map)

@@ -609,3 +609,9 @@ async def send_wait_and_delete(client, destination, content, delete=False, delay
     if delete:
         await asyncio.sleep(delay)
         await client.delete_message(message)
+
+async def list_servers(message, client):
+    '''List the names and IDs of all servers the bot is present in'''
+    if message.content != '-servers': return
+    report = '\n'.join('{} {}'.format(s.name, s.id) for s in client.servers)
+    await client.send_message(message.channel, report)
