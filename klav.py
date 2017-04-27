@@ -138,7 +138,7 @@ async def on_message_delete(message):
 @client.event
 async def on_message_edit(before, after):
     '''Log edited messages if configured to do so for that server'''
-    if message.server.id == '277998528960266250': return
+    if before.server.id == '277998528960266250': return
 
     if after.server is None: return
     if after.author.id == client.user.id: return
