@@ -605,6 +605,43 @@ async def set_gallery_channel(message, servers, client, id_to_fragment_map):
         id_to_fragment_map = read_configs(servers)
     await send_wait_and_delete(client, message.channel, report)
 
+async def set_log_channel(message, servers, client, id_to_fragment_map):
+    '''Set the log channel for a server'''
+    if not message.content.startswith('-'): return
+    if not is_owner(message.author): return
+
+    prefix = 'slc'
+    if message.content[1:1+len(prefix)] != prefix: return
+
+    if len(message.channel_mentions) == 0:
+        report = ':exclamation: Usage: -slc [#channel_mention]+'
+        await send_wait_and_delete(client, message.channel, report)
+        return
+
+    channel = message.channel_mentions[0]
+    to_ignore = [c.id for c in message.channel_mentions[1:]]
+    server = servers[message.server.id]
+
+    headers = { 'Content-Type': 'application/json; charset=utf-8', 'Data-Type': 'json', }
+    config = build_config_dict(server)
+    config['log_chan'] = channel.id
+    config['do_not_log'] = to_ignore
+
+    r = make_put_request_update_config(message, config, id_to_fragment_map)
+
+    if r is None:
+        report = ':skull_crossbones: Error updating config'
+        await send_wait_and_delete(client, message.channel, report)
+        return
+
+    report = ':white_check_mark: Log channel is now: {0.mention}. Ignored channels: '.format(channel)
+    report += ', '.join(c.mention for c in message.channel_mentions[1:])
+    if r.status_code != requests.codes.ok:
+        report = ':no_entry: Failed to configure log. Error code: **{}**'.format(r.status_code)
+    else:
+        id_to_fragment_map = read_configs(servers)
+    await send_wait_and_delete(client, message.channel, report)
+
 async def list_special_channels(message, servers, client):
     '''List the welcome, bias, log and gallery channels'''
     if not is_owner(message.author): return

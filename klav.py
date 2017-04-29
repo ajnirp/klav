@@ -80,6 +80,7 @@ async def on_message(message):
     # These commands start with -
     await util.set_bias_channel(message, servers, client, id_to_fragment_map)
     await util.set_gallery_channel(message, servers, client, id_to_fragment_map)
+    await util.set_log_channel(message, servers, client, id_to_fragment_map)
     await util.list_special_channels(message, servers, client)
     await util.handle_list_roles_request(message, servers, client)
     await util.list_servers(message, client)
