@@ -649,5 +649,5 @@ async def list_servers(message, client):
     '''List the names and IDs of all servers the bot is present in'''
     if message.content != '-servers': return
     servers = sorted(client.servers, key=lambda s: s.name)
-    report = '\n'.join('{} {}'.format(s.name, s.id) for s in client.servers)
+    report = '\n'.join('{} {}'.format(s.name, s.id) for s in servers)
     await client.send_message(message.channel, report)
