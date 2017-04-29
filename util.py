@@ -561,8 +561,7 @@ async def set_bias_channel(message, servers, client, id_to_fragment_map):
         await send_wait_and_delete(client, message.channel, report)
         return
 
-    report = ':white_check_mark: Bias channel is now: {0.mention}. Ignored channels: '.format(channel)
-    report += ', '.join(c.mention for c in message.channel_mentions[1:])
+    report = ':white_check_mark: Bias channel is now: {0.mention}.'.format(channel)
     if r.status_code != requests.codes.ok:
         report = ':no_entry: Failed to configure bias channel. Error code: **{}**'.format(r.status_code)
     else:
@@ -639,7 +638,7 @@ async def list_special_channels(message, servers, client):
     await client.send_message(message.channel, report)
 
 async def send_wait_and_delete(client, destination, content, delete=False, delay=5):
-    '''Send a message, wait for a few seconds and then delete it'''
+    '''Send a message, wait for a few seconds and then OPTIONALLY delete it'''
     message = await client.send_message(destination, content)
     if delete:
         await asyncio.sleep(delay)
