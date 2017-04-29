@@ -552,7 +552,7 @@ async def set_bias_channel(message, servers, client, id_to_fragment_map):
 
     headers = { 'Content-Type': 'application/json; charset=utf-8', 'Data-Type': 'json', }
     config = build_config_dict(server)
-    config['bias_chan'] = channel.id
+    config['channels'][2] = channel.id
 
     r = make_put_request_update_config(message, config, id_to_fragment_map)
 
