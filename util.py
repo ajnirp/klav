@@ -431,7 +431,7 @@ async def handle_remove_command_request(message, servers, client, id_to_fragment
         report = ':no_entry: Failed to remove command: **{}**. Error code: **{}**'.format(input_, r.status_code)
     await client.send_message(message.channel, report)
 
-async def handle_add_command_request(message, servers, client, id_to_fragment_map):
+async def add_command(message, servers, client, id_to_fragment_map):
     '''Add a command to the server'''
     if message.content[0] != ',': return
     if not is_mod(message.author, message.server.id, servers) and not is_owner(message.author): return
