@@ -634,8 +634,9 @@ async def set_log_channel(message, servers, client, id_to_fragment_map):
         await send_wait_and_delete(client, message.channel, report)
         return
 
-    report = ':white_check_mark: Log channel is now: {0.mention}. Ignored channels: '.format(channel)
-    report += ', '.join(c.mention for c in message.channel_mentions[1:])
+    report = ':white_check_mark: Log channel is now: {0.mention}.'.format(channel)
+    if len(message.channel_mentions) > 1:
+        report += 'Ignored channels: ' + ' '.join(c.mention for c in message.channel_mentions[1:])
     if r.status_code != requests.codes.ok:
         report = ':no_entry: Failed to configure log. Error code: **{}**'.format(r.status_code)
     else:
@@ -664,7 +665,9 @@ async def list_special_channels(message, servers, client):
     if server.log_chan is None: report[2] = 'No log channel'
     else:
         log_chan = client.get_channel(server.log_chan)
-        report[2] = 'Log channel: {0.mention}'.format(log_chan)
+        report[2] = 'Log channel: {0.mention}.'.format(log_chan)
+        ignored_channels = map(lambda c: client.get_channel(c), server.do_not_log)
+        report += 'Ignored channels: ' + ' '.join('{0.mention}' for c in ignored_channels)
 
     if server.gallery_chan is None: report[3] = 'No gallery'
     else:
