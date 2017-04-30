@@ -597,7 +597,7 @@ async def set_gallery_channel(message, servers, client, id_to_fragment_map):
         await send_wait_and_delete(client, message.channel, report)
         return
 
-    report = ':white_check_mark: Gallery channel is now: {0.mention}. Ignored channels: '.format(channel)
+    report = ':white_check_mark: Gallery channel is now: {0.mention}. Ignored users: '.format(channel)
     report += ', '.join(c.mention for c in message.channel_mentions[1:])
     if r.status_code != requests.codes.ok:
         report = ':no_entry: Failed to configure gallery. Error code: **{}**'.format(r.status_code)
@@ -613,13 +613,13 @@ async def set_log_channel(message, servers, client, id_to_fragment_map):
     prefix = 'slc'
     if message.content[1:1+len(prefix)] != prefix: return
 
-    if len(message.channel_mentions) == 0:
-        report = ':exclamation: Usage: -slc [#channel_mention]+'
+    if len(message.channel_mentions) != 1:
+        report = ':exclamation: Usage: -slc [#channel_mention] [#user_mention]*'
         await send_wait_and_delete(client, message.channel, report)
         return
 
     channel = message.channel_mentions[0]
-    to_ignore = [c.id for c in message.channel_mentions[1:]]
+    to_ignore = [member.id for member in message.mentions]
     server = servers[message.server.id]
 
     headers = { 'Content-Type': 'application/json; charset=utf-8', 'Data-Type': 'json', }
@@ -635,8 +635,8 @@ async def set_log_channel(message, servers, client, id_to_fragment_map):
         return
 
     report = ':white_check_mark: Log channel is now: {0.mention}.'.format(channel)
-    if len(message.channel_mentions) > 1:
-        report += 'Ignored channels: ' + ' '.join(c.mention for c in message.channel_mentions[1:])
+    if len(message.mentions) > 0:
+        report += ' Ignored users: ' + ' '.join(m.mention for m in message.mentions)
     if r.status_code != requests.codes.ok:
         report = ':no_entry: Failed to configure log. Error code: **{}**'.format(r.status_code)
     else:
@@ -666,8 +666,8 @@ async def list_special_channels(message, servers, client):
     else:
         log_chan = client.get_channel(server.log_chan)
         report[2] = 'Log channel: {0.mention}.'.format(log_chan)
-        ignored_channels = map(lambda c: client.get_channel(c), server.do_not_log)
-        report += 'Ignored channels: ' + ' '.join('{0.mention}' for c in ignored_channels)
+        ignored_users = map(lambda m: server.get_member(m), server.do_not_log)
+        report += 'Ignored users: ' + ' '.join('{0.mention}' for c in ignored_users)
 
     if server.gallery_chan is None: report[3] = 'No gallery'
     else:

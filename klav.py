@@ -125,6 +125,8 @@ async def on_message_delete(message):
     # If the server has no log channel, do nothing
     server = servers[message.server.id]
     if server.log_chan is None: return
+
+    # If the message is by an ignored user, do nothing
     if message.author.id in server.do_not_log: return
 
     # Do not log messages that have been deleted from the log channel
