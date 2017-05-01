@@ -20,10 +20,10 @@ async def on_member_join(member):
     if util.is_owner(member): return
 
     # If this user is blacklisted, ban from the server
-    if member.id in server.blacklist:
-        report = '{} / {} is blacklisted. Banning them.'.format(member.name, member.id)
-        await client.ban(member)
-        return
+    # if member.id in server.blacklist:
+    #     report = '{} / {} is blacklisted. Banning them.'.format(member.name, member.id)
+    #     await client.ban(member)
+    #     return
 
     if server.welcome_msg is not None:
         main_chan = client.get_channel(server.main_chan)

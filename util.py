@@ -68,6 +68,7 @@ def read_configs(servers):
             return
         config = json.loads(r.text)
         servers[s_id] = server.Server(s_id, config)
+        print(servers[s_id].blacklist)
 
     return id_to_fragment_map
 
