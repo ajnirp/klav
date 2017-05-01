@@ -691,7 +691,7 @@ async def list_servers(message, client):
     report = '\n'.join('{} {}'.format(s.name, s.id) for s in servers)
     await client.send_message(message.channel, report)
 
-async def add_field(message, servers, client id_to_fragment_map):
+async def add_field(message, servers, client, id_to_fragment_map):
     '''Add a field to the remote JSON config of each server the bot is in'''
     if not is_owner(message.author): return
 
@@ -721,4 +721,4 @@ async def add_field(message, servers, client id_to_fragment_map):
         else:
             id_to_fragment_map = read_configs(servers)
             report = ':white_check_mark: Added field **{}** to server **{}**'.format(field, server_name)
-        await client.send_message(message,channel, report)
+        await client.send_message(message.channel, report)
