@@ -520,6 +520,7 @@ def build_config_dict(server):
         'member_pics': server.member_pics,
         'periodic_pics': server.periodic_pics,
         'announce_member_leaving': server.announce_member_leaving,
+        'blacklist': server.blacklist,
     }
 
 def make_put_request_update_config(server, config, id_to_fragment_map):
@@ -722,3 +723,32 @@ async def add_field(message, servers, client, id_to_fragment_map):
             id_to_fragment_map = read_configs(servers)
             report = ':white_check_mark: Added field **{}** to server **{}**'.format(field, server_name)
         await client.send_message(message.channel, report)
+
+async def add_to_blacklist(message, servers, client, id_to_fragment_map):
+    if message.content[0] != ',': return
+    if not is_mod(message.author, message.server.id, servers): return
+    prefix = 'bla'
+    if message.content[1:1+len(prefix)] != prefix: return
+    split = message.content.split()
+    if len(split) < 2:
+        report = ':negative_squared_cross_mark: usage: -bla [user_id]+'
+        await client.send_message(message.channel, report)
+        return
+    blacklisted = split[1:]
+    server = servers[message.server.id]
+    config = build_config_dict(server)
+    if config['blacklist'] is None:
+        config['blacklist'] = blacklisted
+    else:
+        config['blacklist'].extend(blacklisted)
+    r = make_put_request_update_config(server, config, id_to_fragment_map)
+    if r is None:
+        report = ':skull_crossbones: Error updating config'
+        await client.send_message(message.channel, report)
+        return
+    if r.status_code != requests.codes.ok:
+        report = ':no_entry: Failed to update blacklist. Error code: **{}**'.format(r.status_code)
+    else:
+        id_to_fragment_map = read_configs(servers)
+        report = ':white_check_mark: Added user IDs `{}` to blacklist'.format(' '.join(blacklisted))
+    await client.send_message(message.channel, report)

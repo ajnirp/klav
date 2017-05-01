@@ -86,9 +86,10 @@ async def on_message(message):
     await util.list_special_channels(message, servers, client)
     await util.handle_list_roles_request(message, servers, client)
     await util.list_servers(message, client)
+    await util.toggle_leave_message(message, servers, client, id_to_fragment_map)
 
     # Bot owner and moderators ownly
-    await util.toggle_leave_message(message, servers, client, id_to_fragment_map)
+    await util.add_to_blacklist(message, servers, client, id_to_fragment_map)
     await util.handle_add_command_request(message, servers, client, id_to_fragment_map)
     await util.handle_alias_command_request(message, servers, client, id_to_fragment_map)
     await util.handle_remove_command_request(message, servers, client, id_to_fragment_map)
