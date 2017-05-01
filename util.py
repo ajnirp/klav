@@ -327,7 +327,7 @@ async def toggle_leave_message(message, servers, client, id_to_fragment_map):
     else:
         config[key] = not config[key]
 
-    r = make_put_request_update_config(message, config, id_to_fragment_map)
+    r = make_put_request_update_config(server, config, id_to_fragment_map)
     if r is None:
         await client.send_message(message.channel, ':skull_crossbones: Error updating config')
         return
@@ -421,7 +421,7 @@ async def handle_remove_command_request(message, servers, client, id_to_fragment
     del server.command_map[input_]
 
     config = build_config_dict(server)
-    r = make_put_request_update_config(message, config, id_to_fragment_map)
+    r = make_put_request_update_config(server, config, id_to_fragment_map)
     if r is None:
         await client.send_message(message.channel, ':skull_crossbones: Error updating config')
         return
@@ -453,7 +453,7 @@ async def handle_add_command_request(message, servers, client, id_to_fragment_ma
     server.command_map[input_] = output_
 
     config = build_config_dict(server)
-    r = make_put_request_update_config(message, config, id_to_fragment_map)
+    r = make_put_request_update_config(server, config, id_to_fragment_map)
     if r is None:
         report = ':skull_crossbones: Error updating config'
         await send_wait_and_delete(client, message.channel, report)
@@ -491,7 +491,7 @@ async def handle_alias_command_request(message, servers, client, id_to_fragment_
     server.command_map[input_] = server.command_map[output_]
 
     config = build_config_dict(server)
-    r = make_put_request_update_config(message, config, id_to_fragment_map)
+    r = make_put_request_update_config(server, config, id_to_fragment_map)
     if r is None:
         report = ':skull_crossbones: Error updating config'
         await send_wait_and_delete(client, message.channel, report)
@@ -522,12 +522,12 @@ def build_config_dict(server):
         'announce_member_leaving': server.announce_member_leaving,
     }
 
-def make_put_request_update_config(message, config, id_to_fragment_map):
+def make_put_request_update_config(server, config, id_to_fragment_map):
     headers = { 'Content-Type': 'application/json; charset=utf-8', 'Data-Type': 'json', }
 
     api_root = 'https://api.myjson.com/bins/'
     for s_id, url_fragment in id_to_fragment_map:
-        if s_id == message.server.id:
+        if s_id == server.id:
             url = api_root + url_fragment
             r = requests.put(url, data=json.dumps(config), headers=headers)
             return r
@@ -554,7 +554,7 @@ async def set_bias_channel(message, servers, client, id_to_fragment_map):
     config = build_config_dict(server)
     config['channels'][2] = channel.id
 
-    r = make_put_request_update_config(message, config, id_to_fragment_map)
+    r = make_put_request_update_config(server, config, id_to_fragment_map)
 
     if r is None:
         report = ':skull_crossbones: Error updating config'
@@ -590,7 +590,7 @@ async def set_gallery_channel(message, servers, client, id_to_fragment_map):
     config['gallery_chan'] = channel.id
     config['do_not_copy_to_gallery'] = to_ignore
 
-    r = make_put_request_update_config(message, config, id_to_fragment_map)
+    r = make_put_request_update_config(server, config, id_to_fragment_map)
 
     if r is None:
         report = ':skull_crossbones: Error updating config'
@@ -627,7 +627,7 @@ async def set_log_channel(message, servers, client, id_to_fragment_map):
     config['log_chan'] = channel.id
     config['do_not_log'] = to_ignore
 
-    r = make_put_request_update_config(message, config, id_to_fragment_map)
+    r = make_put_request_update_config(server, config, id_to_fragment_map)
 
     if r is None:
         report = ':skull_crossbones: Error updating config'
