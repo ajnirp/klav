@@ -17,6 +17,7 @@ async def on_ready():
 @client.event
 async def on_member_join(member):
     server = servers[member.server.id]
+    if util.is_owner(member): return
     if server.welcome_msg is not None:
         main_chan = client.get_channel(server.main_chan)
         welcome_chan = client.get_channel(server.welcome_chan)
