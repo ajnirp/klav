@@ -64,6 +64,11 @@ async def on_member_remove(member):
     notification = notification.format(member)
     await client.send_message(main_chan, notification)
 
+    if server.log_chan is not None:
+        log_chan = client.get_channel(server.log_chan)
+        report = 'left: {} {}'.format(member.id, member.name)
+        await client.send_message(log_chan, report)
+
 @client.event
 async def on_message(message):
     if message.server is None: return
