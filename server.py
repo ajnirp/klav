@@ -24,4 +24,3 @@ class Server:
             self.blacklist = []
         else:
             self.blacklist = config['blacklist']
-        print('Initalized server {}'.format(s_id))

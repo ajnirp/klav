@@ -68,7 +68,6 @@ def read_configs(servers):
             return
         config = json.loads(r.text)
         servers[s_id] = server.Server(s_id, config)
-        print(servers[s_id].blacklist)
 
     return id_to_fragment_map
 
@@ -759,6 +758,10 @@ async def show_blacklist(message, servers, client):
     if not is_mod(message.author, message.server.id, servers): return
     prefix = 'bls'
     if message.content[1:1+len(prefix)] != prefix: return
+    server = servers[message.server.id]
+    if server.blacklist is None:
+        server.blacklist = []
     report = ' No blacklisted user IDs.'
-    report = '`{}`'.format(' '.join(server.blacklist))
+    if len(server.blacklist) > 0:
+        report = '`{}`'.format(' '.join(server.blacklist))
     await client.send_message(message.channel, report)
