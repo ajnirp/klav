@@ -18,6 +18,13 @@ async def on_ready():
 async def on_member_join(member):
     server = servers[member.server.id]
     if util.is_owner(member): return
+
+    # If this user is blacklisted, ban from the server
+    if member.id in server.blacklist:
+        report = '{} / {} is blacklisted. Banning them.'.format(member.name, member.id)
+        await client.ban(member)
+        return
+
     if server.welcome_msg is not None:
         main_chan = client.get_channel(server.main_chan)
         welcome_chan = client.get_channel(server.welcome_chan)
@@ -90,6 +97,7 @@ async def on_message(message):
 
     # Bot owner and moderators ownly
     await util.add_to_blacklist(message, servers, client, id_to_fragment_map)
+    await util.show_blacklist(message, servers, client)
     await util.handle_add_command_request(message, servers, client, id_to_fragment_map)
     await util.handle_alias_command_request(message, servers, client, id_to_fragment_map)
     await util.handle_remove_command_request(message, servers, client, id_to_fragment_map)

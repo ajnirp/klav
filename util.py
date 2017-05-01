@@ -750,5 +750,14 @@ async def add_to_blacklist(message, servers, client, id_to_fragment_map):
         report = ':no_entry: Failed to update blacklist. Error code: **{}**'.format(r.status_code)
     else:
         id_to_fragment_map = read_configs(servers)
-        report = ':white_check_mark: Added user IDs `{}` to blacklist'.format(' '.join(blacklisted))
+        report = ':white_check_mark: Added `{}` to blacklist'.format(' '.join(blacklisted))
+    await client.send_message(message.channel, report)
+
+async def show_blacklist(message, servers, client):
+    if message.content[0] != ',': return
+    if not is_mod(message.author, message.server.id, servers): return
+    prefix = 'bls'
+    if message.content[1:1+len(prefix)] != prefix: return
+    report = ' No blacklisted user IDs.'
+    report = '`{}`'.format(' '.join(server.blacklist))
     await client.send_message(message.channel, report)
