@@ -62,7 +62,7 @@ def read_configs(servers):
 
     for s_id, url_fragment in id_to_fragment_map:
         url = api_root + url_fragment
-        r = requests.get(url)
+        r = requests.get(url, verify=False)
         if r.status_code != 200:
             print('error: read_configs: could not GET {}'.format(url), file=sys.stderr)
             return
