@@ -327,7 +327,7 @@ async def toggle_leave_message(message, servers, client, id_to_fragment_map):
     else:
         config[key] = not config[key]
 
-    r = make_put_request_update_config(message, config, id_to_fragment_map)
+    r = make_put_request_update_config(server, config, id_to_fragment_map)
     if r is None:
         await client.send_message(message.channel, ':skull_crossbones: Error updating config')
         return
@@ -421,7 +421,7 @@ async def handle_remove_command_request(message, servers, client, id_to_fragment
     del server.command_map[input_]
 
     config = build_config_dict(server)
-    r = make_put_request_update_config(message, config, id_to_fragment_map)
+    r = make_put_request_update_config(server, config, id_to_fragment_map)
     if r is None:
         await client.send_message(message.channel, ':skull_crossbones: Error updating config')
         return
@@ -453,7 +453,7 @@ async def add_command(message, servers, client, id_to_fragment_map):
     server.command_map[input_] = output_
 
     config = build_config_dict(server)
-    r = make_put_request_update_config(message, config, id_to_fragment_map)
+    r = make_put_request_update_config(server, config, id_to_fragment_map)
     if r is None:
         report = ':skull_crossbones: Error updating config'
         await send_wait_and_delete(client, message.channel, report)
@@ -491,7 +491,7 @@ async def handle_alias_command_request(message, servers, client, id_to_fragment_
     server.command_map[input_] = server.command_map[output_]
 
     config = build_config_dict(server)
-    r = make_put_request_update_config(message, config, id_to_fragment_map)
+    r = make_put_request_update_config(server, config, id_to_fragment_map)
     if r is None:
         report = ':skull_crossbones: Error updating config'
         await send_wait_and_delete(client, message.channel, report)
@@ -520,14 +520,15 @@ def build_config_dict(server):
         'member_pics': server.member_pics,
         'periodic_pics': server.periodic_pics,
         'announce_member_leaving': server.announce_member_leaving,
+        'blacklist': server.blacklist,
     }
 
-def make_put_request_update_config(message, config, id_to_fragment_map):
+def make_put_request_update_config(server, config, id_to_fragment_map):
     headers = { 'Content-Type': 'application/json; charset=utf-8', 'Data-Type': 'json', }
 
     api_root = 'https://api.myjson.com/bins/'
     for s_id, url_fragment in id_to_fragment_map:
-        if s_id == message.server.id:
+        if s_id == server.id:
             url = api_root + url_fragment
             r = requests.put(url, data=json.dumps(config), headers=headers)
             return r
@@ -554,7 +555,7 @@ async def set_bias_channel(message, servers, client, id_to_fragment_map):
     config = build_config_dict(server)
     config['channels'][2] = channel.id
 
-    r = make_put_request_update_config(message, config, id_to_fragment_map)
+    r = make_put_request_update_config(server, config, id_to_fragment_map)
 
     if r is None:
         report = ':skull_crossbones: Error updating config'
@@ -590,14 +591,14 @@ async def set_gallery_channel(message, servers, client, id_to_fragment_map):
     config['gallery_chan'] = channel.id
     config['do_not_copy_to_gallery'] = to_ignore
 
-    r = make_put_request_update_config(message, config, id_to_fragment_map)
+    r = make_put_request_update_config(server, config, id_to_fragment_map)
 
     if r is None:
         report = ':skull_crossbones: Error updating config'
         await send_wait_and_delete(client, message.channel, report)
         return
 
-    report = ':white_check_mark: Gallery channel is now: {0.mention}. Ignored channels: '.format(channel)
+    report = ':white_check_mark: Gallery channel is now: {0.mention}. Ignored users: '.format(channel)
     report += ', '.join(c.mention for c in message.channel_mentions[1:])
     if r.status_code != requests.codes.ok:
         report = ':no_entry: Failed to configure gallery. Error code: **{}**'.format(r.status_code)
@@ -613,13 +614,13 @@ async def set_log_channel(message, servers, client, id_to_fragment_map):
     prefix = 'slc'
     if message.content[1:1+len(prefix)] != prefix: return
 
-    if len(message.channel_mentions) == 0:
-        report = ':exclamation: Usage: -slc [#channel_mention]+'
+    if len(message.channel_mentions) != 1:
+        report = ':exclamation: Usage: -slc [#channel_mention] [#user_mention]*'
         await send_wait_and_delete(client, message.channel, report)
         return
 
     channel = message.channel_mentions[0]
-    to_ignore = [c.id for c in message.channel_mentions[1:]]
+    to_ignore = [member.id for member in message.mentions]
     server = servers[message.server.id]
 
     headers = { 'Content-Type': 'application/json; charset=utf-8', 'Data-Type': 'json', }
@@ -627,7 +628,7 @@ async def set_log_channel(message, servers, client, id_to_fragment_map):
     config['log_chan'] = channel.id
     config['do_not_log'] = to_ignore
 
-    r = make_put_request_update_config(message, config, id_to_fragment_map)
+    r = make_put_request_update_config(server, config, id_to_fragment_map)
 
     if r is None:
         report = ':skull_crossbones: Error updating config'
@@ -635,8 +636,8 @@ async def set_log_channel(message, servers, client, id_to_fragment_map):
         return
 
     report = ':white_check_mark: Log channel is now: {0.mention}.'.format(channel)
-    if len(message.channel_mentions) > 1:
-        report += 'Ignored channels: ' + ' '.join(c.mention for c in message.channel_mentions[1:])
+    if len(message.mentions) > 0:
+        report += ' Ignored users: ' + ' '.join(m.mention for m in message.mentions)
     if r.status_code != requests.codes.ok:
         report = ':no_entry: Failed to configure log. Error code: **{}**'.format(r.status_code)
     else:
@@ -666,8 +667,8 @@ async def list_special_channels(message, servers, client):
     else:
         log_chan = client.get_channel(server.log_chan)
         report[2] = 'Log channel: {0.mention}.'.format(log_chan)
-        ignored_channels = map(lambda c: client.get_channel(c), server.do_not_log)
-        report += 'Ignored channels: ' + ' '.join('{0.mention}' for c in ignored_channels)
+        ignored_users = map(lambda m: server.get_member(m), server.do_not_log)
+        report += 'Ignored users: ' + ' '.join('{0.mention}' for c in ignored_users)
 
     if server.gallery_chan is None: report[3] = 'No gallery'
     else:
@@ -689,4 +690,78 @@ async def list_servers(message, client):
     if message.content != '-servers': return
     servers = sorted(client.servers, key=lambda s: s.name)
     report = '\n'.join('{} {}'.format(s.name, s.id) for s in servers)
+    await client.send_message(message.channel, report)
+
+async def add_field(message, servers, client, id_to_fragment_map):
+    '''Add a field to the remote JSON config of each server the bot is in'''
+    if not is_owner(message.author): return
+
+    if message.content[0] != '-': return
+
+    prefix = 'af'
+    if message.content[1:1+len(prefix)] != prefix: return
+
+    split = message.content.split()
+    if len(split) != 2: return
+
+    field = split[1]
+    api_root = 'https://api.myjson.com/bins/'
+    for server_id, url_fragment in id_to_fragment_map:
+        server = servers[server_id]
+        url = api_root + url_fragment
+        config = build_config_dict(server)
+        config[field] = None
+        r = make_put_request_update_config(server, config, id_to_fragment_map)
+        server_name = client.get_server(server_id).name
+        if r is None:
+            report = ':skull_crossbones: Error updating config for server **{}**'.format(server_name)
+            await client.send_message(message.channel, report)
+            return
+        if r.status_code != requests.codes.ok:
+            report = ':no_entry: Failed to update config for server **{}**. Error code: **{}**'.format(server_name, r.status_code)
+        else:
+            id_to_fragment_map = read_configs(servers)
+            report = ':white_check_mark: Added field **{}** to server **{}**'.format(field, server_name)
+        await client.send_message(message.channel, report)
+
+async def add_to_blacklist(message, servers, client, id_to_fragment_map):
+    if message.content[0] != ',': return
+    if not is_mod(message.author, message.server.id, servers): return
+    prefix = 'bla'
+    if message.content[1:1+len(prefix)] != prefix: return
+    split = message.content.split()
+    if len(split) < 2:
+        report = ':negative_squared_cross_mark: usage: -bla [user_id]+'
+        await client.send_message(message.channel, report)
+        return
+    blacklisted = split[1:]
+    server = servers[message.server.id]
+    config = build_config_dict(server)
+    if config['blacklist'] is None:
+        config['blacklist'] = blacklisted
+    else:
+        config['blacklist'].extend(blacklisted)
+    r = make_put_request_update_config(server, config, id_to_fragment_map)
+    if r is None:
+        report = ':skull_crossbones: Error updating config'
+        await client.send_message(message.channel, report)
+        return
+    if r.status_code != requests.codes.ok:
+        report = ':no_entry: Failed to update blacklist. Error code: **{}**'.format(r.status_code)
+    else:
+        id_to_fragment_map = read_configs(servers)
+        report = ':white_check_mark: Added `{}` to blacklist'.format(' '.join(blacklisted))
+    await client.send_message(message.channel, report)
+
+async def show_blacklist(message, servers, client):
+    if message.content[0] != ',': return
+    if not is_mod(message.author, message.server.id, servers): return
+    prefix = 'bls'
+    if message.content[1:1+len(prefix)] != prefix: return
+    server = servers[message.server.id]
+    if server.blacklist is None:
+        server.blacklist = []
+    report = ' No blacklisted user IDs.'
+    if len(server.blacklist) > 0:
+        report = '`{}`'.format(' '.join(server.blacklist))
     await client.send_message(message.channel, report)

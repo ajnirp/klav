@@ -17,6 +17,14 @@ async def on_ready():
 @client.event
 async def on_member_join(member):
     server = servers[member.server.id]
+    if util.is_owner(member): return
+
+    # If this user is blacklisted, ban from the server
+    # if member.id in server.blacklist:
+    #     report = '{} / {} is blacklisted. Banning them.'.format(member.name, member.id)
+    #     await client.ban(member)
+    #     return
+
     if server.welcome_msg is not None:
         main_chan = client.get_channel(server.main_chan)
         welcome_chan = client.get_channel(server.welcome_chan)
@@ -56,6 +64,11 @@ async def on_member_remove(member):
     notification = notification.format(member)
     await client.send_message(main_chan, notification)
 
+    if server.log_chan is not None:
+        log_chan = client.get_channel(server.log_chan)
+        report = 'left: {} {}'.format(member.id, member.name)
+        await client.send_message(log_chan, report)
+
 @client.event
 async def on_message(message):
     if message.server is None: return
@@ -78,21 +91,24 @@ async def on_message(message):
 
     # Bot owner only
     # These commands start with -
+    await util.add_field(message, servers, client, id_to_fragment_map)
     await util.set_bias_channel(message, servers, client, id_to_fragment_map)
     await util.set_gallery_channel(message, servers, client, id_to_fragment_map)
     await util.set_log_channel(message, servers, client, id_to_fragment_map)
     await util.list_special_channels(message, servers, client)
     await util.handle_list_roles_request(message, servers, client)
     await util.list_servers(message, client)
+    await util.toggle_leave_message(message, servers, client, id_to_fragment_map)
 
     # Bot owner and moderators ownly
-    await util.toggle_leave_message(message, servers, client, id_to_fragment_map)
     await util.add_command(message, servers, client, id_to_fragment_map)
     await util.handle_alias_command_request(message, servers, client, id_to_fragment_map)
     await util.handle_remove_command_request(message, servers, client, id_to_fragment_map)
 
     # Moderators only
     # These commands start with ,
+    await util.add_to_blacklist(message, servers, client, id_to_fragment_map)
+    await util.show_blacklist(message, servers, client)
     await util.delete_messages(message, servers, client)
     await util.kick_members(message, servers, client)
 
@@ -125,6 +141,8 @@ async def on_message_delete(message):
     # If the server has no log channel, do nothing
     server = servers[message.server.id]
     if server.log_chan is None: return
+
+    # If the message is by an ignored user, do nothing
     if message.author.id in server.do_not_log: return
 
     # Do not log messages that have been deleted from the log channel

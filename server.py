@@ -16,7 +16,11 @@ class Server:
         self.periodic_pics = config['periodic_pics']
         self.member_nicknames = config['member_nicknames']
         self.member_pics = config['member_pics']
-        if 'announce_member_leaving' in config:
-            self.announce_member_leaving = config['announce_member_leaving']
+        if 'announce_member_leaving' not in config:
+            self.announce_member_leaving = []
         else:
-            self.announce_member_leaving = False
+            self.announce_member_leaving = config['announce_member_leaving']
+        if 'blacklist' not in config:
+            self.blacklist = []
+        else:
+            self.blacklist = config['blacklist']
