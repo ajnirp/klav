@@ -431,6 +431,40 @@ async def handle_remove_command_request(message, servers, client, id_to_fragment
         report = ':no_entry: Failed to remove command: **{}**. Error code: **{}**'.format(input_, r.status_code)
     await client.send_message(message.channel, report)
 
+async def change_command(message, servers, client, id_to_fragment_map):
+    '''Change the response of an existing command on the server'''
+    if message.content[0] != ',': return
+    if not is_mod(message.author, message.server.id, servers) and not is_owner(message.author): return
+
+    split = message.content.split()
+    if len(split) < 3: return
+
+    prefix = 'change'
+    if message.content[1:1+len(prefix)] != prefix: return
+
+    input_ = split[1]
+    output_ = ' '.join(split[2:])
+    server = servers[message.server.id]
+
+    if input_ not in server.command_map:
+        report = ':bangbang: The command **{}** does not exist. Did you mean to use `add`?'.format(input_)
+        await send_wait_and_delete(client, message.channel, report)
+        return
+    old_response = server.command_map[input_]
+    server.command_map[input_] = output_
+
+    config = build_config_dict(server)
+    r = make_put_request_update_config(server, config, id_to_fragment_map)
+    if r is None:
+        report = ':skull_crossbones: Error updating config'
+        await send_wait_and_delete(client, message.channel, report)
+        return
+
+    report = ':white_check_mark: Changed command **{}**.\nOld response was <{}>\nNew response is <{}>'.format(input_, old_response, output_)
+    if r.status_code != requests.codes.ok:
+        report = ':no_entry: Failed to add command: **{}**. Error code: **{}**'.format(input_, r.status_code)
+    await send_wait_and_delete(client, message.channel, report)
+
 async def add_command(message, servers, client, id_to_fragment_map):
     '''Add a command to the server'''
     if message.content[0] != ',': return
