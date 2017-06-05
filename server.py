@@ -20,7 +20,3 @@ class Server:
             self.announce_member_leaving = []
         else:
             self.announce_member_leaving = config['announce_member_leaving']
-        if 'blacklist' not in config:
-            self.blacklist = []
-        else:
-            self.blacklist = config['blacklist']
