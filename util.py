@@ -465,6 +465,45 @@ async def change_command(message, servers, client, id_to_fragment_map):
         report = ':no_entry: Failed to add command: **{}**. Error code: **{}**'.format(input_, r.status_code)
     await send_wait_and_delete(client, message.channel, report)
 
+async def swap_commands(message, servers, client, id_to_fragment_map):
+    '''Swap the responses for two existing commands'''
+    if message.content[0] != ',': return
+    if not is_mod(message.author, message.server.id, servers) and not is_owner(message.author): return
+
+    split = message.content.split()
+    if len(split) != 3: return
+
+    prefix = 'swap'
+    if message.content[1:1+len(prefix)] != prefix: return
+
+    first = split[1]
+    second = split[2]
+    server = servers[message.server.id]
+
+    if first not in server.command_map:
+        report = ':bangbang: The command **{}** does not exist.'.format(first)
+        await send_wait_and_delete(client, message.channel, report)
+        return
+
+    if second not in server.command_map:
+        report = ':bangbang: The command **{}** does not exist.'.format(second)
+        await send_wait_and_delete(client, message.channel, report)
+        return
+
+    server.command_map[first], server.command_map[second] = server.command_map[second], server.command_map[first]
+
+    config = build_config_dict(server)
+    r = make_put_request_update_config(server, config, id_to_fragment_map)
+    if r is None:
+        report = ':skull_crossbones: Error updating config'
+        await send_wait_and_delete(client, message.channel, report)
+        return
+
+    report = ':white_check_mark: Swapped commands **{0}** and **{1}**.\nResponse for **{0}** is now <{2}>\nResponse for **{1}** is now <{3}>'.format(first, second, server.command_map[first], server.command_map[second])
+    if r.status_code != requests.codes.ok:
+        report = ':no_entry: Failed to swap commands **{}** and **{}**. Error code: **{}**'.format(first, second, r.status_code)
+    await send_wait_and_delete(client, message.channel, report)
+
 async def add_command(message, servers, client, id_to_fragment_map):
     '''Add a command to the server'''
     if message.content[0] != ',': return

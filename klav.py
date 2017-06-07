@@ -98,6 +98,7 @@ async def on_message(message):
     # Bot owner and moderators ownly
     await util.add_command(message, servers, client, id_to_fragment_map)
     await util.change_command(message, servers, client, id_to_fragment_map)
+    await util.swap_commands(message, servers, client, id_to_fragment_map)
     await util.handle_alias_command_request(message, servers, client, id_to_fragment_map)
     await util.handle_remove_command_request(message, servers, client, id_to_fragment_map)
 
