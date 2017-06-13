@@ -103,6 +103,11 @@ async def kick_members(message, servers, client):
 async def command(message, servers, client):
     if message.content[0] not in '.!': return
     server = servers[message.server.id]
+    if message.author.id == '266548590883766284' and message.server.id == '204294040026480640':
+        emoji = discord.utils.find(lambda e: e.name == 'minatired', message.server.emojis)
+        response = 'guar <:{}:{}>'.format(emoji.name, emoji.id)
+        await client.send_message(message.channel, response)
+        return
     command_str = message.content[1:]
     if command_str in server.command_map:
         response = server.command_map[command_str]
