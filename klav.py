@@ -71,7 +71,6 @@ async def on_message(message):
     await util.gallery_update(message, servers, client)
 
     if message.author.id == client.user.id: return
-    if message.author.id == '167711590890733568': return
     if len(message.content) == 0: return
 
     server = servers[message.server.id]
