@@ -236,7 +236,7 @@ def pin_event(before, after):
     if before.pinned and not after.pinned: return 1
     return 0
 
-async def handle_user_info_request(message, _, client):
+async def user_info(message, _, client):
     if message.content[:3] not in ['.u ', '!u ']: return
 
     for member in message.mentions:
@@ -270,12 +270,6 @@ async def display_user_info(member, channel, client):
 
     await client.send_message(channel, content=None, tts=False, embed=embed)
 
-async def handle_gsd_countdown_request(message, servers, client):
-    if message.server.id != '170293223577747457': return
-    if message.content not in ['.countdown', '!countdown']: return
-
-    await post_gsd_countdown(message, servers, client)
-
 # async def post_gsd_countdown(message, _, client):
 #     target_time_string = '27 March 2017 12:00:00 PM +0900'
 #     target_time = datetime.datetime.strptime(target_time_string, '%d %B %Y %H:%M:%S %p %z')
@@ -296,7 +290,7 @@ async def handle_gsd_countdown_request(message, servers, client):
 
 #     await client.send_message(message.channel, report)
 
-async def handle_list_mods_request(message, servers, client):
+async def list_mods(message, servers, client):
     if message.content not in ['.m', '!m']: return
     server = servers[message.server.id]
     mods = []
