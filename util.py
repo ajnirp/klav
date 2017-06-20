@@ -144,7 +144,7 @@ Commands that start with `.` (period) can be used by anyone on the server.
 Any command that starts with `.` (period) can also start with `!` (exclamation mark), there is no difference.
 Commands that start with `,` (comma) can only be used by mods.
 
-The exceptions are `,add` `,alias` and `,remove`. The bot owner can use these commands as well.
+The exceptions are `,add` `,alias`, `,remove`, `,change` and `,swap`. The bot owner can use these commands as well.
 
 __**Reference**__
 
@@ -174,9 +174,15 @@ Example: `,alias hi hello`
 `,remove name` Remove an existing command.
 Example: `,remove hello`
 
+`,change name response` Change the response of an existing command.
+Example: `,change hello https://gfycat.com/DismalSimilarDragonfly#?speed=2`
+
+`,swap name1 name2` Swap the responses of two existing commands.
+Example: `,swap hello hello2`
+
 `,roles` List out all roles on a server.
 
-For more information, contact the bot owner, **ssozi** (user ID: 150919851710480384).
+For more information, contact the bot owner, <@150919851710480384>.
 '''
     await client.send_message(message.author, usage)
 
