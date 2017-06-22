@@ -104,8 +104,9 @@ async def command(message, servers, client):
     if message.content[0] not in '.!': return
     server = servers[message.server.id]
     if message.author.id == '266548590883766284' and message.server.id == '204294040026480640':
-        emoji = discord.utils.find(lambda e: e.name == 'minatired', message.server.emojis)
-        response = 'guar <:{}:{}>'.format(emoji.name, emoji.id)
+        # emoji = discord.utils.find(lambda e: e.name == 'minatired', message.server.emojis)
+        # response = 'guar <:{}:{}>'.format(emoji.name, emoji.id)
+        response = "Anyway after not being here the past few days i can say i was happier, Cheeksy's targeting of me and every thing i say has negatively impacted me and made me afraid of coming here. I may have negative character traits but i don't think shaming me for every single one of them is helpful in overcoming them. Cheeksy is a Bully and has effectively accomplished his goal of bullying me out forever. To his delight I'll never be a part of aoacord ever again"
         await client.send_message(message.channel, response)
         return
     command_str = message.content[1:]
