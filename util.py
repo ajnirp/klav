@@ -801,3 +801,16 @@ async def add_field(message, servers, client, id_to_fragment_map):
             id_to_fragment_map = read_configs(servers)
             report = ':white_check_mark: Added field **{}** to server **{}**'.format(field, server_name)
         await client.send_message(message.channel, report)
+
+async def list_urls(message, client, id_to_fragment_map):
+    if not is_owner(message.author): return
+    if message.content != '-lu': return
+    api_root = 'https://api.myjson.com/{}'
+    report = []
+    for server_id, url_frag in id_to_fragment_map:
+        server = client.get_server(server_id)
+        url = api_root.format(url_frag)
+        line = '{} {}'.format(server.name, url)
+        report.append(line)
+    report = '\n'.join(report)
+    await client.send_message(message.author, report)
