@@ -802,6 +802,40 @@ async def add_field(message, servers, client, id_to_fragment_map):
             report = ':white_check_mark: Added field **{}** to server **{}**'.format(field, server_name)
         await client.send_message(message.channel, report)
 
+async def set_field(message, servers, client, id_to_fragment_map):
+    '''Set a field in the remote JSON config for the specific server that the command is run in'''
+    if not is_owner(message.author): return
+    if message.content[0] != '-': return
+
+    prefix = 'sf'
+    if message.content[1:1+len(prefix)] != prefix: return
+
+    split = message.content.split()
+    if len(split) < 3: return
+
+    field = split[1]
+    value = message.content[1+len(prefix)+1+len(field)+1:]
+    api_root = 'https://api.myjson.com/bins/'
+    for server_id, url_fragment in id_to_fragment_map:
+        if server_id == message.server.id:
+            server = servers[server_id]
+            url = api_root + url_fragment
+            config = build_config_dict(server)
+            config[field] = value
+            r = make_put_request_update_config(server, config, id_to_fragment_map)
+            server_name = client.get_server(server_id).name
+            if r is None:
+                report = ':skull_crossbones: Error updating config for server **{}**'.format(server_name)
+                await client.send_message(message.channel, report)
+                return
+            if r.status_code != requests.codes.ok:
+                report = ':no_entry: Failed to update config for server **{}**. Error code: **{}**'.format(server_name, r.status_code)
+            else:
+                id_to_fragment_map = read_configs(servers)
+                report = ':white_check_mark: Set field **{}** to value **{}**'.format(field, value)
+            await client.send_message(message.channel, report)
+            break
+
 async def list_urls(message, client, id_to_fragment_map):
     if not is_owner(message.author): return
     if message.content != '-lu': return

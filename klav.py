@@ -86,6 +86,7 @@ async def on_message(message):
     # Bot owner only
     # These commands start with -
     await util.add_field(message, servers, client, id_to_fragment_map)
+    await util.set_field(message, servers, client, id_to_fragment_map)
     await util.set_bias_channel(message, servers, client, id_to_fragment_map)
     await util.set_gallery_channel(message, servers, client, id_to_fragment_map)
     await util.set_log_channel(message, servers, client, id_to_fragment_map)
