@@ -800,12 +800,51 @@ async def add_field(message, servers, client, id_to_fragment_map):
                 report = ':no_entry: Failed to update config for server **{}**. Error code: **{}**'.format(server_name, r.status_code)
             else:
                 id_to_fragment_map = read_configs(servers)
-                report = ':white_check_mark: Added field **{}** to server **{}**'.format(field, server_name)
+                report = ':white_check_mark: Added field **{}** to server config'.format(field)
             await client.send_message(message.channel, report)
             break
 
-async def set_field(message, servers, client, id_to_fragment_map):
-    '''Set a field in the remote JSON config for the specific server that the command is run in'''
+async def remove_field(message, servers, client, id_to_fragment_map):
+    '''Remove a field in the remote JSON config for the specific server that the command is run in'''
+    if not is_owner(message.author): return
+
+    if message.content[0] != '-': return
+
+    prefix = 'rf'
+    if message.content[1:1+len(prefix)] != prefix: return
+
+    split = message.content.split()
+    if len(split) != 2: return
+
+    field = split[1]
+    api_root = 'https://api.myjson.com/bins/'
+    for server_id, url_fragment in id_to_fragment_map:
+        if server_id == message.server.id:
+            server = servers[server_id]
+            url = api_root + url_fragment
+            config = build_config_dict(server)
+            if field not in config:
+                report = ':no_good: The field **{}** does not exist in the config for this server'.format(field)
+                await client.send_message(message.channel, report)
+                return
+            del config[field]
+            r = make_put_request_update_config(server, config, id_to_fragment_map)
+            server_name = client.get_server(server_id).name
+            if r is None:
+                report = ':skull_crossbones: Error updating config for server **{}**'.format(server_name)
+                await client.send_message(message.channel, report)
+                return
+            if r.status_code != requests.codes.ok:
+                report = ':no_entry: Failed to update config for server **{}**. Error code: **{}**'.format(server_name, r.status_code)
+            else:
+                id_to_fragment_map = read_configs(servers)
+                report = ':white_check_mark: Removed field **{}** from server config'.format(field)
+            await client.send_message(message.channel, report)
+            break
+
+
+async def set_field_string(message, servers, client, id_to_fragment_map):
+    '''Set a field to a string in the remote JSON config for the specific server that the command is run in'''
     if not is_owner(message.author): return
     if message.content[0] != '-': return
 
@@ -824,7 +863,7 @@ async def set_field(message, servers, client, id_to_fragment_map):
             url = api_root + url_fragment
             config = build_config_dict(server)
             if field not in config:
-                report = ':no_good: The field {} does not exist in the config for this server'.format(field)
+                report = ':no_good: The field **{}** does not exist in the config for this server'.format(field)
                 await client.send_message(message.channel, report)
                 return
             config[field] = value
