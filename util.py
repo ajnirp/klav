@@ -289,7 +289,7 @@ async def display_server_info(message, client):
          .add_field(name='Server created', value=ts(message.server.created_at)) \
          .add_field(name='Members', value=message.server.member_count) \
          .add_field(name='ID', value=message.server.id) \
-         .add_field(name='Owner', value=message.server.owner.name)
+         .add_field(name='Owner', value=message.server.owner.name) \
          .add_field(name='Roles', value=roles)
 
     await client.send_message(message.channel, content=None, tts=False, embed=embed)
