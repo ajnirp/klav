@@ -271,6 +271,29 @@ async def display_user_info(member, channel, client):
 
     await client.send_message(channel, content=None, tts=False, embed=embed)
 
+async def display_server_info(message, client):
+    '''Display the server info in the channel that the message was posted'''
+    if message.content not in ['.s', '!s']: return
+
+    embed = discord.Embed(
+        title='Server info',
+        type='rich',
+        description=message.server.name,
+        url=discord.Embed.Empty,
+        footer=discord.Embed.Empty,
+        colour=discord.Color(0xeaa82e))
+
+    roles = ' '.join(r.name for r in message.server.role_hierarchy)
+
+    embed.set_thumbnail(url=message.server.icon_url) \
+         .add_field(name='Server created', value=ts(message.server.created_at)) \
+         .add_field(name='Members', value=message.server.member_count) \
+         .add_field(name='ID', value=message.server.id) \
+         .add_field(name='Owner', value=message.server.owner.name)
+         .add_field(name='Roles', value=roles)
+
+    await client.send_message(message.channel, content=None, tts=False, embed=embed)
+
 # async def post_gsd_countdown(message, _, client):
 #     target_time_string = '27 March 2017 12:00:00 PM +0900'
 #     target_time = datetime.datetime.strptime(target_time_string, '%d %B %Y %H:%M:%S %p %z')

@@ -119,6 +119,7 @@ async def on_message(message):
     await util.handle_help_request(message, servers, client)
     await util.user_info(message, servers, client)
     await util.list_mods(message, servers, client)
+    await util.display_server_info(message, client)
     # await notifs.add_notif(message, servers, client)
     # await notifs.remove_notif(message, servers, client)
     # await notifs.view_notifs(message, servers, client)
