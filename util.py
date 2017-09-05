@@ -916,3 +916,13 @@ async def list_urls(message, client, id_to_fragment_map):
         report.append(line)
     report = '\n'.join(report)
     await client.send_message(message.author, report)
+
+async def check_sojin_smooch(message, client):
+    '''On GsDcord, check if a message contains a sojinSmooch and react to it with one'''
+    if message.server.id != '170293223577747457': return
+    emoji_id = '261171768050450432'
+    emoji_name = 'sojinSmooch'
+    emoji_str = '<:{}:{}>'.format(emoji_name, emoji_id)
+    emoji = discord.utils.find(lambda e: e.id == emoji_id, message.server.emojis)
+    if emoji_str in message.content:
+        await client.add_reaction(message, emoji)
