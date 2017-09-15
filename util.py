@@ -926,3 +926,29 @@ async def check_sojin_smooch(message, client):
     emoji = discord.utils.find(lambda e: e.id == emoji_id, message.server.emojis)
     if emoji_str in message.content:
         await client.add_reaction(message, emoji)
+
+async def spongify(message, client):
+    '''Turn a sentence into a mocking Spongebob sentence'''
+    if message.server.id != '204294040026480640': return
+    if message.content[0] not in '.!': return
+
+    prefix = 'spongify'
+    if message.content[1:1+len(prefix)] != prefix: return
+
+    content = message.content[1+len(prefix)+1:]
+
+    output = []
+    caps = False
+    for c in content.lower():
+        if c.isalpha():
+            output.append(c.upper() if caps else c)
+            caps = not caps
+        else:
+            output.append(c)
+    output = ''.join(output)
+
+    emoji_id = '357448699754053633'
+    emoji = discord.utils.find(lambda e: e.id == emoji_id, message.server.emojis)
+    report = '{} <:{}:{}>'.format(output, emoji.name, emoji_id)
+
+    await client.send_message(message.channel, report)
