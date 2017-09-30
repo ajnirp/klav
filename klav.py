@@ -110,6 +110,7 @@ async def on_message(message):
     # These commands start with ,
     await util.delete_messages(message, servers, client)
     await util.kick_members(message, servers, client)
+    await util.preban_ids(message, servers, client)
 
     # @everyone
     # These commands start with .
