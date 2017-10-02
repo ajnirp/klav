@@ -69,8 +69,8 @@ async def on_message(message):
     if message.server.id == '277998528960266250': return
 
     await util.gallery_update(message, servers, client)
-    if message.server.id == '170293223577747457':
-        await util.check_sojin_smooch(message, client)
+    # if message.server.id == '170293223577747457':
+    #     await util.check_sojin_smooch(message, client)
 
     if message.author.id == client.user.id: return
     if len(message.content) == 0: return
