@@ -49,6 +49,7 @@ async def on_member_join(member):
 @client.event
 async def on_member_remove(member):
     if member.server.id == '202834966621585408': return
+    if util.is_owner(member): return
 
     server = servers[member.server.id]
     if not server.announce_member_leaving: return
