@@ -970,3 +970,9 @@ async def preban_ids(message, servers, client):
 
 	await client.send_message(prebans_channel, reason)
 	await client.send_message(prebans_channel, preban_request)
+
+async def commence_bullying(message, client):
+    if message.content[0] in '.,!' and len(message.content) > 1:
+        emoji = discord.utils.find(lambda e: e.id == '261171768050450432', message.server.emojis)
+        report = '{} <:{}:{}>'.format(emoji.name, emoji.name, emoji.id)
+        await client.send_message(message.channel, report)
