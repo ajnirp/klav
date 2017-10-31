@@ -12,6 +12,9 @@ import time
 import validators
 
 async def set_bias(message, servers, client):
+    if message.server.id == '204294040026480640':
+        return
+
     server = servers[message.server.id]
     content = message.content.strip().lower().split()
 
