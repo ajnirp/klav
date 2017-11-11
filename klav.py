@@ -69,8 +69,6 @@ async def on_message(message):
     if message.server is None: return
     if message.server.id == '277998528960266250': return
 
-    if message.author.id == '309764902124519424': return
-
     await util.gallery_update(message, servers, client)
     if message.server.id == '170293223577747457':
         pass
