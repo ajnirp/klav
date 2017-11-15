@@ -1,9 +1,9 @@
+from PIL import Image
 import asyncio
 import datetime
 import discord
 import json
 import os
-import PIL
 import pytz
 import random
 import requests
@@ -995,7 +995,7 @@ async def display_color(message, client):
 
     async def send_color_patch_pic(client, color):
         data = [color for i in range(64 * 64)]
-        img = PIL.Image.new('RGB', (64, 64))
+        img = Image.new('RGB', (64, 64))
         img.putdata(data)
         filename = form_filename(color)
         img.save(filename)
