@@ -1005,6 +1005,7 @@ async def display_color(message, client):
     def form_filename(color):
         hex_code = rgb_to_hex_code(*color)
         filename = '{}.png'.format(hex_code)
+        return filename
 
     if message.content[0] not in '.!': return
 
