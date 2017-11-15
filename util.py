@@ -3,6 +3,7 @@ import datetime
 import discord
 import json
 import os
+import PIL
 import pytz
 import random
 import requests
@@ -979,3 +980,51 @@ async def commence_bullying(message, client):
         emoji = discord.utils.find(lambda e: e.id == '261171768050450432', message.server.emojis)
         report = '{} <:{}:{}>'.format(emoji.name, emoji.name, emoji.id)
         await client.send_message(message.channel, report)
+
+async def display_color(message, client):
+
+    async def show_usage():
+        report = 'Usage: `.color <RGB hex code>` e.g.\n`.color #abc123`\n`.color 142 79 105`'
+        await client.send_message(message.channel, report)
+
+    async def hex_code_to_rgb(h):
+        return (int(channel, 16) for channel in [h[:2], h[2:4], h[4:]])
+
+    async def rgb_to_hex_code(r, g, b):
+        return ''.join(hex(int(c))[2:] for c in [r, g, b])
+
+    async def send_color_patch_pic(client, color):
+        data = [color for i in range(64 * 64)]
+        img = PIL.Image.new('RGB', (64, 64))
+        img.putdata(data)
+        filename = form_filename(color)
+        img.save(filename)
+        async with client.send_file(message.channel, filename) as _:
+            os.remove(filename)
+
+    def form_filename(color):
+        hex_code = rgb_to_hex_code(*color)
+        filename = '{}.png'.format(hex_code)
+
+    if message.content[0] not in '.!': return
+
+    prefixes = ['color', 'colour']
+    if not any(message.content[1:1+len(prefix)] == prefix for prefix in prefixes):
+        return
+
+    split = message.content.split()
+
+    if len(split) == 2:
+        color = split[1]
+        if color.startswith('#'): color = color[1:]
+        elif color.startswith('0x'): color = color[2:]
+        color = hex_code_to_rgb(color)
+        await send_color_patch_pic(client, color)
+
+    elif len(split) == 4:
+        color = [int(s) for s in split[1:]]
+        await send_color_patch_pic(client, color)
+
+    else:
+        show_usage()
+        return
