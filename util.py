@@ -991,7 +991,9 @@ async def display_color(message, client):
         return tuple(int(channel, 16) for channel in [h[:2], h[2:4], h[4:]])
 
     def rgb_to_hex_code(r, g, b):
-        return ''.join(hex(int(c))[2:] for c in [r, g, b])
+        def two_digit_hex(n):
+            return hex(int(n))[2:].rjust(2, '0')
+        return ''.join(map(two_digit_hex, [r, g, b]))
 
     async def send_color_patch_pic(client, color):
         data = [color for i in range(64 * 64)]
