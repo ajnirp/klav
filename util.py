@@ -983,7 +983,7 @@ async def commence_bullying(message, client):
 
 async def display_color(message, client):
 
-    async def show_usage():
+    async def show_usage(message, client):
         report = 'Usage: `.color <RGB hex code>` e.g.\n`.color #abc123`\n`.color 142 79 105`'
         await client.send_message(message.channel, report)
 
@@ -1029,5 +1029,28 @@ async def display_color(message, client):
         await send_color_patch_pic(client, color)
 
     else:
-        show_usage()
+        await show_usage(message, client)
         return
+
+async def handle_choose_request(message, client):
+
+    async def show_usage(message, client):
+        report = 'Usage: `.choose <choice1> | <choice2> | <choice3> | ...`' + \
+                 '\ne.g. `.choose go to sleep | post on discord`'
+        await client.send_message(message.channel, report)
+
+    if message.content[0] not in '.!': return
+
+    prefix = 'choose'
+    if message.content[1:1+len(prefix)] != prefix: return
+
+    split = message.content.split()
+    if len(split) < 2:
+        await show_usage(message, client)
+        return
+
+    choices = message.content.strip()[2+len(prefix):].strip()
+    choices = choices.split('|')
+    chosen = random.choice(choices)
+    report = '{0.mention} I choose: {1}!'.format(message.author, chosen)
+    await client.send_message(message.channel, report)
