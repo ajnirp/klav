@@ -999,8 +999,8 @@ async def display_color(message, client):
         img.putdata(data)
         filename = form_filename(color)
         img.save(filename)
-        async with client.send_file(message.channel, filename) as _:
-            os.remove(filename)
+        await client.send_file(message.channel, filename)
+        os.remove(filename)
 
     def form_filename(color):
         hex_code = rgb_to_hex_code(*color)
