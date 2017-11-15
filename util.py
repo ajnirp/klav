@@ -1039,12 +1039,6 @@ async def handle_choose_request(message, client):
                  '\ne.g. `.choose go to sleep | post on discord`'
         await client.send_message(message.channel, report)
 
-    def sanitize(s):
-        res = s.replace('*', '\*')
-        res = res.replace('_', '\_')
-        res = res.replace('\\', '\\\\')
-        return res
-
     if message.content[0] not in '.!': return
 
     prefix = 'choose'
@@ -1058,5 +1052,5 @@ async def handle_choose_request(message, client):
     choices = message.content.strip()[2+len(prefix):].strip()
     choices = choices.split('|')
     chosen = random.choice(choices)
-    report = '{0.mention} I choose: **{1}**!'.format(message.author, sanitize(chosen))
+    report = '{0.mention} I choose: **{1}**!'.format(message.author, chosen.strip())
     await client.send_message(message.channel, report)
