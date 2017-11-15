@@ -987,10 +987,10 @@ async def display_color(message, client):
         report = 'Usage: `.color <RGB hex code>` e.g.\n`.color #abc123`\n`.color 142 79 105`'
         await client.send_message(message.channel, report)
 
-    async def hex_code_to_rgb(h):
-        return (int(channel, 16) for channel in [h[:2], h[2:4], h[4:]])
+    def hex_code_to_rgb(h):
+        return tuple(int(channel, 16) for channel in [h[:2], h[2:4], h[4:]])
 
-    async def rgb_to_hex_code(r, g, b):
+    def rgb_to_hex_code(r, g, b):
         return ''.join(hex(int(c))[2:] for c in [r, g, b])
 
     async def send_color_patch_pic(client, color):
@@ -1022,7 +1022,7 @@ async def display_color(message, client):
         await send_color_patch_pic(client, color)
 
     elif len(split) == 4:
-        color = [int(s) for s in split[1:]]
+        color = tuple(int(s) for s in split[1:])
         await send_color_patch_pic(client, color)
 
     else:
