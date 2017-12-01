@@ -194,6 +194,9 @@ For more information, contact the bot owner, <@150919851710480384>.
 async def handle_member_pic_request(message, servers, client):
     if message.content[0] not in '.!': return
     if len(message.content.split()) > 1: return
+    if message.server.id == '170293223577747457':
+        if message.channel.id != '386268030679646208':
+            return
     server = servers[message.server.id]
     member_nickname = message.content[1:]
     if member_nickname in server.member_nicknames:
