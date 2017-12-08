@@ -35,7 +35,8 @@ async def on_member_join(member):
         elif count % 10 == 3 and (count // 10) % 10 != 1: suffix = 'rd'
 
         greeting = greeting.format(member, server.welcome_msg, count, suffix, welcome_chan, bias_chan)
-        await client.send_message(main_chan, greeting)
+        if member.id != '388520370967150602':
+            await client.send_message(main_chan, greeting)
 
     await util.assign_default_role(member, servers, client)
 
@@ -49,6 +50,7 @@ async def on_member_join(member):
 @client.event
 async def on_member_remove(member):
     if member.server.id == '202834966621585408': return
+    if member.id == '388520370967150602': return
     if util.is_owner(member): return
 
     server = servers[member.server.id]
