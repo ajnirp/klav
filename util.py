@@ -335,6 +335,9 @@ async def list_mods(message, servers, client):
     await client.send_message(message.channel, report)
 
 async def gallery_update(message, servers, client):
+    # Ignore the romantic hideout
+    if message.channel.id == '326665388312100865': return
+
     server = servers[message.server.id]
 
     if server.gallery_chan is None: return
