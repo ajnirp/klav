@@ -75,11 +75,10 @@ def read_configs(servers):
 
     return id_to_fragment_map
 
-def is_mod(user, s_id, servers):
+def is_mod(user, s_id, servers, client):
     server = servers[s_id]
     server_obj = client.get_server(s_id)
-    if server_obj.owner.id == user.id:
-        return True
+    if server_obj.owner.id == user.id: return True
     return any(role.id in server.mod_roles for role in user.roles)
 
 def is_owner(user):
@@ -87,7 +86,7 @@ def is_owner(user):
 
 async def delete_messages(message, servers, client):
     if not message.content.startswith(',d'): return
-    if not is_mod(message.author, message.server.id, servers): return
+    if not is_mod(message.author, message.server.id, servers, client): return
     num_messages = message.content[2:]
     try:
         num_messages = 1 + int(num_messages)
@@ -98,7 +97,7 @@ async def delete_messages(message, servers, client):
 
 async def kick_members(message, servers, client):
     if not message.content.startswith(',k'): return
-    if not is_mod(message.author, message.server.id, servers): return
+    if not is_mod(message.author, message.server.id, servers, client): return
     for member in message.mentions:
         await client.kick(member)
         server = servers[message.server.id]
@@ -443,7 +442,7 @@ async def handle_list_emojis_request(message, client):
 async def handle_remove_command_request(message, servers, client, id_to_fragment_map):
     '''Remove a command from the server'''
     if message.content[0] != ',': return
-    if not is_mod(message.author, message.server.id, servers) and not is_owner(message.author): return
+    if not is_mod(message.author, message.server.id, servers, client) and not is_owner(message.author): return
 
     split = message.content.split()
     if len(split) != 2: return
@@ -476,7 +475,7 @@ async def handle_remove_command_request(message, servers, client, id_to_fragment
 async def change_command(message, servers, client, id_to_fragment_map):
     '''Change the response of an existing command on the server'''
     if message.content[0] != ',': return
-    if not is_mod(message.author, message.server.id, servers) and not is_owner(message.author): return
+    if not is_mod(message.author, message.server.id, servers, client) and not is_owner(message.author): return
 
     split = message.content.split()
     if len(split) < 3: return
@@ -510,7 +509,7 @@ async def change_command(message, servers, client, id_to_fragment_map):
 async def swap_commands(message, servers, client, id_to_fragment_map):
     '''Swap the responses for two existing commands'''
     if message.content[0] != ',': return
-    if not is_mod(message.author, message.server.id, servers) and not is_owner(message.author): return
+    if not is_mod(message.author, message.server.id, servers, client) and not is_owner(message.author): return
 
     split = message.content.split()
     if len(split) != 3: return
@@ -549,7 +548,7 @@ async def swap_commands(message, servers, client, id_to_fragment_map):
 async def add_command(message, servers, client, id_to_fragment_map):
     '''Add a command to the server'''
     if message.content[0] != ',': return
-    if not is_mod(message.author, message.server.id, servers) and not is_owner(message.author): return
+    if not is_mod(message.author, message.server.id, servers, client) and not is_owner(message.author): return
 
     split = message.content.split()
     if len(split) < 3: return
@@ -582,7 +581,7 @@ async def add_command(message, servers, client, id_to_fragment_map):
 async def handle_alias_command_request(message, servers, client, id_to_fragment_map):
     '''Alias one command to another'''
     if message.content[0] != ',': return
-    if not is_mod(message.author, message.server.id, servers) and not is_owner(message.author): return
+    if not is_mod(message.author, message.server.id, servers, client) and not is_owner(message.author): return
 
     split = message.content.split()
     if len(split) < 3: return
@@ -968,7 +967,7 @@ async def spongify(message, client):
 
 async def preban_ids(message, servers, client):
 	if message.server.id != '170293223577747457': return
-	# if not is_mod(message.author, message.server.id, servers): return
+	# if not is_mod(message.author, message.server.id, servers, client): return
 
 	if message.content[0] != ',': return
 
