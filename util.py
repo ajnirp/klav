@@ -77,8 +77,13 @@ def read_configs(servers):
 
 def is_mod(user, s_id, servers, client):
     server = servers[s_id]
+
+    # Server owners are always considered mods
     server_obj = client.get_server(s_id)
+    if server_obj is None:
+        print("is_mod: couldn't find server with ID:", s_id, file=sys.stderr)
     if server_obj.owner.id == user.id: return True
+
     return any(role.id in server.mod_roles for role in user.roles)
 
 def is_owner(user):
