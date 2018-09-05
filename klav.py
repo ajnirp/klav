@@ -75,9 +75,6 @@ async def on_message(message):
     await util.gallery_update(message, servers, client)
     if message.server.id == '170293223577747457':
         pass
-        # await util.commence_bullying(message, client)
-        # return
-        # await util.check_sojin_smooch(message, client)
 
     if message.author.id == client.user.id: return
     if len(message.content) == 0: return
