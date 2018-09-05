@@ -98,7 +98,7 @@ async def on_message(message):
     await util.set_gallery_channel(message, servers, client, id_to_fragment_map)
     await util.set_log_channel(message, servers, client, id_to_fragment_map)
     await util.list_special_channels(message, servers, client)
-    await util.handle_show_roles_request(message, servers, client)
+    await util.handle_show_roles_request(message, client)
     await util.list_servers(message, client)
     await util.toggle_leave_message(message, servers, client, id_to_fragment_map)
     await util.list_urls(message, client, id_to_fragment_map)

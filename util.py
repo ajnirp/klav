@@ -387,7 +387,7 @@ async def toggle_leave_message(message, servers, client, id_to_fragment_map):
 
     await client.send_message(message.channel, report)
 
-async def handle_list_roles_request(message, servers, client):
+async def handle_show_roles_request(message, client):
     '''Post information about the roles in a server. Info is sent out as a DM to the requester.'''
     if message.content != '-roles': return
     if not is_owner(message.author): return
@@ -418,6 +418,7 @@ async def handle_list_roles_request(message, servers, client):
         idx += 1
     report = ''.join(chunks[start:idx])
     await client.send_message(destination, report)
+
 
 async def handle_list_emojis_request(message, client):
     '''Post all the emojis in a server'''
