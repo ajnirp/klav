@@ -934,24 +934,6 @@ async def list_urls(message, client, id_to_fragment_map):
     report = '\n'.join(report)
     await client.send_message(message.author, report)
 
-async def preban_ids(message, servers, client):
-	if message.server.id != '170293223577747457': return
-	# if not is_mod(message.author, message.server.id, servers, client): return
-
-	if message.content[0] != ',': return
-
-	prefix = 'preban'
-	if message.content[1:1+len(prefix)] != prefix: return
-
-	content = ' '.join(message.content.split()[1:])
-	reason, ids = content.split('|')
-
-	prebans_channel = client.get_channel('363815836902883329')
-	preban_request = '-blacklist add {}'.format(ids)
-
-	await client.send_message(prebans_channel, reason)
-	await client.send_message(prebans_channel, preban_request)
-
 async def display_color(message, client):
 
     async def show_usage(message, client):
