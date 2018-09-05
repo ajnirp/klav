@@ -406,7 +406,7 @@ async def handle_list_roles_request(message, servers, client):
         await client.send_message(destination, ':bangbang: No roles found on this server')
         return
 
-    await client.send_message(message.channel, '__**Roles on this server**__')
+    await client.send_message(destination, '__**Roles on this server**__')
     cumulative_len, start, idx = 0, 0, 0
     for chunk in chunks:
         cumulative_len += len(chunk)
