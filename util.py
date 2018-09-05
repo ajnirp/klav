@@ -388,21 +388,22 @@ async def toggle_leave_message(message, servers, client, id_to_fragment_map):
     await client.send_message(message.channel, report)
 
 async def handle_list_roles_request(message, servers, client):
-    '''Post information about the roles in a server'''
+    '''Post information about the roles in a server. Info is sent out as a DM to the requester.'''
     if message.content != '-roles': return
     if not is_owner(message.author): return
 
     MESSAGE_LIMIT = 2000
     chunks = []
+    destination = message.author
 
     for role in sorted(message.server.roles, key=lambda r: r.position, reverse=True):
         if role.name == '@everyone': continue
         c = role.color
-        message_chunk = '**{}** {} {}\n'.format(role.name, c.to_tuple(), hex(c.value))
+        message_chunk = '**{}** {} {} {}\n'.format(role.name, role.id, c.to_tuple(), hex(c.value))
         chunks.append(message_chunk)
 
     if len(chunks) == 0:
-        await client.send_message(message.channel, ':bangbang: No roles found on this server')
+        await client.send_message(destination, ':bangbang: No roles found on this server')
         return
 
     await client.send_message(message.channel, '__**Roles on this server**__')
@@ -411,12 +412,12 @@ async def handle_list_roles_request(message, servers, client):
         cumulative_len += len(chunk)
         if cumulative_len > MESSAGE_LIMIT:
             report = ''.join(chunks[start:idx])
-            await client.send_message(message.channel, report)
+            await client.send_message(destination, report)
             start = idx
             cumulative_len = 0
         idx += 1
     report = ''.join(chunks[start:idx])
-    await client.send_message(message.channel, report)
+    await client.send_message(destination, report)
 
 async def handle_list_emojis_request(message, client):
     '''Post all the emojis in a server'''
