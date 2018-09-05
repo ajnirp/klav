@@ -129,7 +129,6 @@ async def on_message(message):
     await util.display_server_info(message, client)
     await util.display_color(message, client)
     await util.handle_choose_request(message, client)
-    # await util.spongify(message, client) # removed for now
     # await notifs.add_notif(message, servers, client)
     # await notifs.remove_notif(message, servers, client)
     # await notifs.view_notifs(message, servers, client)
