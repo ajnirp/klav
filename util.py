@@ -341,25 +341,6 @@ async def list_mods(message, servers, client):
     report = 'Mods: {}'.format(', '.join(mod.name for mod in mods))
     await client.send_message(message.channel, report)
 
-async def gallery_update(message, servers, client):
-    # Ignore the romantic hideout
-    if message.channel.id == '326665388312100865': return
-
-    server = servers[message.server.id]
-
-    if server.gallery_chan is None: return
-    if message.channel.id in [server.gallery_chan, server.welcome_chan, server.log_chan, server.bias_chan]: return
-    if message.channel.id in server.do_not_copy_to_gallery: return
-
-    found_urls = ' '.join(word for word in message.content.split() if validators.url(word))
-    found_urls += ' '.join(attachment['url'] for attachment in message.attachments)
-
-    if len(found_urls) > 0:
-        report = '**{0}** in {1.mention}: {2}'.format(message.author.name, message.channel, found_urls)
-        gallery_chan = client.get_channel(server.gallery_chan)
-
-        await client.send_message(gallery_chan, report)
-
 async def toggle_leave_message(message, servers, client, id_to_fragment_map):
     if message.content != '-tlm': return
     if not is_owner(message.author): return
@@ -633,8 +614,6 @@ def build_config_dict(server):
         'default_role': server.default_role,
         'welcome_msg': server.welcome_msg,
         'mod_roles': server.mod_roles,
-        'gallery_chan': server.gallery_chan,
-        'do_not_copy_to_gallery': server.do_not_copy_to_gallery,
         'role_map': role_map,
         'command_map': server.command_map,
         'member_nicknames': server.member_nicknames,
@@ -689,43 +668,6 @@ async def set_bias_channel(message, servers, client, id_to_fragment_map):
         id_to_fragment_map = read_configs(servers)
     await send_wait_and_delete(client, message.channel, report)
 
-async def set_gallery_channel(message, servers, client, id_to_fragment_map):
-    '''Set the gallery channel for a server'''
-    if not message.content.startswith('-'): return
-    if not is_owner(message.author): return
-
-    prefix = 'sgc'
-    if message.content[1:1+len(prefix)] != prefix: return
-
-    if len(message.channel_mentions) == 0:
-        report = ':exclamation: Usage: -sgc [#channel_mention]+'
-        await send_wait_and_delete(client, message.channel, report)
-        return
-
-    channel = message.channel_mentions[0]
-    to_ignore = [c.id for c in message.channel_mentions[1:]]
-    server = servers[message.server.id]
-
-    headers = { 'Content-Type': 'application/json; charset=utf-8', 'Data-Type': 'json', }
-    config = build_config_dict(server)
-    config['gallery_chan'] = channel.id
-    config['do_not_copy_to_gallery'] = to_ignore
-
-    r = make_put_request_update_config(server, config, id_to_fragment_map)
-
-    if r is None:
-        report = ':skull_crossbones: Error updating config'
-        await send_wait_and_delete(client, message.channel, report)
-        return
-
-    report = ':white_check_mark: Gallery channel is now: {0.mention}. Ignored users: '.format(channel)
-    report += ', '.join(c.mention for c in message.channel_mentions[1:])
-    if r.status_code != requests.codes.ok:
-        report = ':no_entry: Failed to configure gallery. Error code: **{}**'.format(r.status_code)
-    else:
-        id_to_fragment_map = read_configs(servers)
-    await send_wait_and_delete(client, message.channel, report)
-
 async def set_log_channel(message, servers, client, id_to_fragment_map):
     '''Set the log channel for a server'''
     if not message.content.startswith('-'): return
@@ -765,7 +707,7 @@ async def set_log_channel(message, servers, client, id_to_fragment_map):
     await send_wait_and_delete(client, message.channel, report)
 
 async def list_special_channels(message, servers, client):
-    '''List the welcome, bias, log and gallery channels'''
+    '''List the welcome, bias and log channels'''
     if not is_owner(message.author): return
     if not message.content == '-lsc': return
 
@@ -789,11 +731,6 @@ async def list_special_channels(message, servers, client):
         report[2] = 'Log channel: {0.mention}.'.format(log_chan)
         ignored_users = map(lambda m: server.get_member(m), server.do_not_log)
         report += 'Ignored users: ' + ' '.join('{0.mention}' for c in ignored_users)
-
-    if server.gallery_chan is None: report[3] = 'No gallery'
-    else:
-        gallery_chan = client.get_channel(server.gallery_chan)
-        report[3] = 'Gallery: {0.mention}.'.format(gallery_chan)
 
     report = '\n'.join(report)
     await client.send_message(message.channel, report)

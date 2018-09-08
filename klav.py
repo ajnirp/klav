@@ -72,7 +72,6 @@ async def on_message(message):
     if message.server.id == '277998528960266250': return
     if message.author.id == '188059734144843779': return
 
-    await util.gallery_update(message, servers, client)
     if message.server.id == '170293223577747457':
         pass
 
@@ -95,7 +94,6 @@ async def on_message(message):
     await util.set_field_string(message, servers, client, id_to_fragment_map)
     await util.remove_field(message, servers, client, id_to_fragment_map)
     await util.set_bias_channel(message, servers, client, id_to_fragment_map)
-    await util.set_gallery_channel(message, servers, client, id_to_fragment_map)
     await util.set_log_channel(message, servers, client, id_to_fragment_map)
     await util.list_special_channels(message, servers, client)
     await util.handle_show_roles_request(message, client)
